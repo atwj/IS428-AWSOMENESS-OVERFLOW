@@ -8,3 +8,10 @@
 .idea/vcs.xml
 
 .idea/workspace.xml
+
+webapp/.idea/modules.xml
+
+webapp/node_modules
+webapp/.idea/webapp.iml
+
+webapp/.idea/workspace.xml
