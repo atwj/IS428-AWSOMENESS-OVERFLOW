@@ -51,7 +51,7 @@ badgesHeader = ['BadgeID:ID(BadgeId)',':LABEL'] ##!!!!!! Sort this out.
 postsHeader = ['PostID:ID(PostId)', 'CreationDate:float', \
                'Score', 'ViewCount', 'Body',  \
                'LastActivityDate:float', 'CommunityOwnedDate:float', 'ClosedDate:float',\
-               'Title', 'Tags', 'AnswerCount', 'CommentCount', 'FavoriteCount',':LABEL']
+               'Title', 'Tags', 'AnswerCount', 'CommentCount', 'FavoriteCount']
 
 tagsHeader = ['TagId:ID(TagId)',':LABEL'] #tag name
 votesHeader = ['VoteId:ID(VoteId)','VoteTypeId','CreationDate','BountyAmount',':LABEL']
@@ -68,7 +68,7 @@ postlinksHeader = [':START_ID(PostId)','CreationDate:float',':END_ID(PostId)',':
 commentsHeader = [':START_ID(UserId)','Score', 'Text', 'CreationDate:float',':END_ID(PostId)', ':TYPE']
 votes_rel_header = [':START_ID(VoteId)',':END_ID(PostId)',':TYPE']
 votes_fav_header = [':START_ID(UserId)',':END_ID(VoteId)',':TYPE']
-
+"""
 usersHeader = ['UserId:ID(UserId)','Reputation:int','CreationDate:float', 'DisplayName', 'LastAccessDate', \
                'WebsiteUrl', 'Location', 'Age', 'AboutMe', 'Views',':LABEL']
 users = open_csv('users')
@@ -250,17 +250,26 @@ if len(badges_rel_batch) > 1:
     badges_rel_batch.clear()
 
 os.remove('../data/Badges.xml')
+"""
 
-postlinks = open_csv('postlinks')
-postlinks.writerow(postlinksHeader)
-postlinks_batch = []
+
+postlinks_ref = open_csv('postlinks_ref')
+postlinks_dup = open_csv('postlinks_dup')
+postlinks_ref.writerow(postlinksHeader)
+postlinks_dup.writerow(postlinksHeader)
+postlinksref_batch = []
+postlinksdup_batch = []
 # counter = 0
 for event,elem in tqdm(etree.iterparse('../data/PostLinks.xml', encoding="utf-8", recover=True)):
     PostId = clean(elem.get('PostId'))
     RelatedPostId = clean(elem.get('RelatedPostId'))
     CreationDate = cal_epoch(elem.get('CreationDate'))
-    TYPE = 'IS_DUPLICATE_OF' if elem.get('PostLinkTypeId') == '3' else 'IS_REFERENCED_FROM'
-    postlinks_batch.append(ascii_encode([RelatedPostId,CreationDate,PostId,TYPE]))
+    TYPE = 'IS_DUPLICATE_OF' if elem.get('LinkTypeId') == '3' else 'IS_REFERENCED_FROM'
+
+    if elem.get('LinkTypeId') == '3':
+        postlinksdup_batch.append(ascii_encode([RelatedPostId,CreationDate,PostId,'IS_DUPLICATE_OF']))
+    else:
+        postlinksref_batch.append(ascii_encode([RelatedPostId, CreationDate, PostId, 'IS_REFERENCED_FROM']))
 
     elem.clear()
     while elem.getprevious() is not None:
@@ -268,12 +277,21 @@ for event,elem in tqdm(etree.iterparse('../data/PostLinks.xml', encoding="utf-8"
     # counter += 1
     # if counter > MAX_REC:
     #     break
-    if len(postlinks_batch) > MAX_LINES:
-        postlinks.writerows(postlinks_batch)
-        postlinks_batch.clear()
-if len(postlinks_batch) > 1:
-    postlinks.writerows(postlinks_batch)
-    postlinks_batch.clear()
+    if len(postlinksref_batch) > MAX_LINES:
+        postlinks_ref.writerows(postlinksref_batch)
+        postlinksref_batch.clear()
+
+    if len(postlinksdup_batch) > MAX_LINES:
+        postlinks_dup.writerows(postlinksdup_batch)
+        postlinksdup_batch.clear()
+
+if len(postlinksref_batch) > 1:
+    postlinks_ref.writerows(postlinksref_batch)
+    postlinksref_batch.clear()
+
+if len(postlinksdup_batch) > 1:
+    postlinks_dup.writerows(postlinksdup_batch)
+    postlinksdup_batch.clear()
 
 os.remove('../data/PostLinks.xml')
 
@@ -298,22 +316,32 @@ posts_lastedit_batch = []
 posts_owner_batch = []
 posts_tags_batch = []
 # counter = 0
+def quote(s):
+    if s.startswith('"') and s.endswith('"'):
+        return s
+    elif s.startswith('"') and not s.endswith('"'):
+        return s + '"'
+    elif not s.startswith('"') and s.endswith('"'):
+        return '"'+s
+    else:
+        return '"'+s+'"'
+
 for event, elem in tqdm(etree.iterparse('../data/Posts.xml', encoding="utf-8", recover=True)):
     PostId = clean(elem.get('Id'))
     CreationDate = cal_epoch(elem.get('CreationDate'))
     Score = clean(elem.get('Score'))
     ViewCount = clean(elem.get('ViewCount'))
-    Body = clean(elem.get('Body'))
+    Body = quote(clean(elem.get('Body')))
     LastActivityDate = cal_epoch(elem.get('LastActivityDate'))
     CommunityOwnedDate = cal_epoch(elem.get('CommunityOwnedDate'))
     ClosedDate = cal_epoch(elem.get('ClosedDate'))
-    Title = clean(elem.get('Title'))
+    Title = quote(clean(elem.get('Title')))
     AnswerCount = clean(elem.get('AnswerCount'))
     CommentCount = clean(elem.get('CommentCount'))
     FavoriteCount = clean(elem.get('FavoriteCount'))
     LABEL = 'Posts' #;Question' if elem.get('PostTypeId') is None or int(elem.get('PostTypeId')) == 1 or None else 'Posts;Answer'
     post_rec = [PostId,CreationDate,Score,ViewCount,Body,LastActivityDate,CommunityOwnedDate, \
-                ClosedDate, Title, AnswerCount, CommentCount, FavoriteCount, LABEL]
+                ClosedDate, Title, AnswerCount, CommentCount, FavoriteCount]
     posts_batch.append(ascii_encode(map(str,post_rec)))
 
     if elem.get('ParentId') is not None:

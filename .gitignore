@@ -15,3 +15,7 @@ webapp/node_modules
 webapp/.idea/webapp.iml
 
 webapp/.idea/workspace.xml
+
+csvs/
+
+data/
