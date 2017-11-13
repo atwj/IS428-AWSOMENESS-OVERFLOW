@@ -250,7 +250,7 @@ if len(badges_rel_batch) > 1:
     badges_rel_batch.clear()
 
 os.remove('../data/Badges.xml')
-"""
+
 
 
 postlinks_ref = open_csv('postlinks_ref')
@@ -294,7 +294,7 @@ if len(postlinksdup_batch) > 1:
     postlinksdup_batch.clear()
 
 os.remove('../data/PostLinks.xml')
-
+"""
 posts = open_csv('posts')
 posts_rel = open_csv('posts_rel') #parent of contending answers #PostId, PostId
 posts_answers = open_csv('posts_answers') #accepted answers #PostId, PostId
@@ -316,26 +316,17 @@ posts_lastedit_batch = []
 posts_owner_batch = []
 posts_tags_batch = []
 # counter = 0
-def quote(s):
-    if s.startswith('"') and s.endswith('"'):
-        return s
-    elif s.startswith('"') and not s.endswith('"'):
-        return s + '"'
-    elif not s.startswith('"') and s.endswith('"'):
-        return '"'+s
-    else:
-        return '"'+s+'"'
 
 for event, elem in tqdm(etree.iterparse('../data/Posts.xml', encoding="utf-8", recover=True)):
     PostId = clean(elem.get('Id'))
     CreationDate = cal_epoch(elem.get('CreationDate'))
     Score = clean(elem.get('Score'))
     ViewCount = clean(elem.get('ViewCount'))
-    Body = quote(clean(elem.get('Body')))
+    Body = clean(elem.get('Body'))
     LastActivityDate = cal_epoch(elem.get('LastActivityDate'))
     CommunityOwnedDate = cal_epoch(elem.get('CommunityOwnedDate'))
     ClosedDate = cal_epoch(elem.get('ClosedDate'))
-    Title = quote(clean(elem.get('Title')))
+    Title = clean(elem.get('Title'))
     AnswerCount = clean(elem.get('AnswerCount'))
     CommentCount = clean(elem.get('CommentCount'))
     FavoriteCount = clean(elem.get('FavoriteCount'))
