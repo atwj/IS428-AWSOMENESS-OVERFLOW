@@ -9,7 +9,7 @@
     "material-ui-icons": "^1.0.0-beta.17",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
-    "react-scripts": "1.0.17",
+    "react-scripts": "^1.0.17",
     "react-sigma": "^1.2.29",
     "requests": "^0.2.2"
   },
