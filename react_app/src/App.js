@@ -4,6 +4,7 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Grid from 'material-ui/Grid'
+import Chart1 from './Viz1'
 // import {Sigma, RandomizeNodePositions, RelativeSize} from 'react-sigma';
 // import {cypher} from './Neo4j.js'
 
@@ -13,10 +14,6 @@ const styles = theme => ({
         width: '100%',
     },
 });
-
-class NetworkGraph extends Component {
-    
-}
 
 class TopAppBar extends Component {
     constructor(props){
@@ -70,7 +67,9 @@ class App extends Component {
             <TopAppBar/>
             <div>div1</div>
             <div>div2</div>
-            <div>div3</div>
+            <div>
+                <Chart1 data={[5,10,1,3]} size={[500,500]}/>
+            </div>
         </div>
 
     );
