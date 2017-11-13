@@ -1,463 +1,578 @@
 {"nodes":[
   {
     "name": "html",
-    "group": 6
+    "group": 6,
+    "nodesize": 272.45
   },
   {
     "name": "css",
-    "group": 6
+    "group": 6,
+    "nodesize": 341.17
   },
   {
     "name": "hibernate",
-    "group": 8
+    "group": 8,
+    "nodesize": 29.83
   },
   {
     "name": "spring",
-    "group": 8
+    "group": 8,
+    "nodesize": 52.84
   },
   {
     "name": "ruby",
-    "group": 3
+    "group": 3,
+    "nodesize": 70.14
   },
   {
     "name": "ruby-on-rails",
-    "group": 3
+    "group": 3,
+    "nodesize": 55.31
   },
   {
     "name": "ios",
-    "group": 4
+    "group": 4,
+    "nodesize": 87.46
   },
   {
     "name": "swift",
-    "group": 4
+    "group": 4,
+    "nodesize": 63.62
   },
   {
     "name": "html5",
-    "group": 6
+    "group": 6,
+    "nodesize": 140.18
   },
   {
     "name": "c",
-    "group": 1
+    "group": 1,
+    "nodesize": 189.83
   },
   {
     "name": "c++",
-    "group": 1
+    "group": 1,
+    "nodesize": 268.11
   },
   {
     "name": "asp.net",
-    "group": 2
+    "group": 2,
+    "nodesize": 129.55
   },
   {
     "name": "c#",
-    "group": 2
+    "group": 2,
+    "nodesize": 321.13
   },
   {
     "name": "objective-c",
-    "group": 4
+    "group": 4,
+    "nodesize": 47.01
   },
   {
     "name": "javascript",
-    "group": 6
+    "group": 6,
+    "nodesize": 649.16
   },
   {
     "name": "jquery",
-    "group": 6
+    "group": 6,
+    "nodesize": 208.29
   },
   {
     "name": "redux",
-    "group": 3
+    "group": 3,
+    "nodesize": 8.52
   },
   {
     "name": "reactjs",
-    "group": 3
+    "group": 3,
+    "nodesize": 59.03
   },
   {
     "name": "php",
-    "group": 6
+    "group": 6,
+    "nodesize": 361.22
   },
   {
     "name": "mysql",
-    "group": 6
+    "group": 6,
+    "nodesize": 165.43
   },
   {
     "name": "spring-mvc",
-    "group": 8
+    "group": 8,
+    "nodesize": 18
   },
   {
     "name": ".net",
-    "group": 2
+    "group": 2,
+    "nodesize": 75.08
   },
   {
     "name": "react-native",
-    "group": 3
+    "group": 3,
+    "nodesize": 13.61
   },
   {
     "name": "spring-boot",
-    "group": 8
+    "group": 8,
+    "nodesize": 12.37
   },
   {
     "name": "less",
-    "group": 6
+    "group": 6,
+    "nodesize": 9.73
   },
   {
     "name": "sass",
-    "group": 6
+    "group": 6,
+    "nodesize": 30.55
   },
   {
     "name": "hadoop",
-    "group": 10
+    "group": 10,
+    "nodesize": 17.95
   },
   {
     "name": "apache-spark",
-    "group": 10
+    "group": 10,
+    "nodesize": 11.04
   },
   {
     "name": "sql-server",
-    "group": 2
+    "group": 2,
+    "nodesize": 64.62
   },
   {
     "name": "express",
-    "group": 3
+    "group": 3,
+    "nodesize": 14.27
   },
   {
     "name": "node.js",
-    "group": 3
+    "group": 3,
+    "nodesize": 117.36
   },
   {
     "name": "mongodb",
-    "group": 3
+    "group": 3,
+    "nodesize": 50.95
   },
   {
     "name": "iphone",
-    "group": 4
+    "group": 4,
+    "nodesize": 15.29
   },
   {
     "name": "github",
-    "group": 5
+    "group": 5,
+    "nodesize": 12.71
   },
   {
     "name": "git",
-    "group": 5
+    "group": 5,
+    "nodesize": 54.48
   },
   {
     "name": "excel",
-    "group": 14
+    "group": 14,
+    "nodesize": 12.5
   },
   {
     "name": "excel-vba",
-    "group": 14
+    "group": 14,
+    "nodesize": 11.38
   },
   {
     "name": "entity-framework",
-    "group": 2
+    "group": 2,
+    "nodesize": 12.88
   },
   {
     "name": "linq",
-    "group": 2
+    "group": 2,
+    "nodesize": 8.32
   },
   {
     "name": "wcf",
-    "group": 2
+    "group": 2,
+    "nodesize": 12.73
   },
   {
     "name": "wpf",
-    "group": 2
+    "group": 2,
+    "nodesize": 19.38
   },
   {
     "name": "android",
-    "group": 4
+    "group": 4,
+    "nodesize": 229.86
   },
   {
     "name": "java",
-    "group": 8
+    "group": 8,
+    "nodesize": 610.65
   },
   {
     "name": "scala",
-    "group": 10
+    "group": 10,
+    "nodesize": 27.02
   },
   {
     "name": "ajax",
-    "group": 6
+    "group": 6,
+    "nodesize": 35.41
   },
   {
     "name": "django",
-    "group": 1
+    "group": 1,
+    "nodesize": 40.91
   },
   {
     "name": "python",
-    "group": 1
+    "group": 1,
+    "nodesize": 438.67
   },
   {
     "name": "vba",
-    "group": 14
+    "group": 14,
+    "nodesize": 16.87
   },
   {
     "name": "xcode",
-    "group": 4
+    "group": 4,
+    "nodesize": 11.37
   },
   {
     "name": "apache",
-    "group": 5
+    "group": 5,
+    "nodesize": 13.17
   },
   {
     "name": "nginx",
-    "group": 5
+    "group": 5,
+    "nodesize": 9.49
   },
   {
     "name": "angularjs",
-    "group": 6
+    "group": 6,
+    "nodesize": 126.59
   },
   {
     "name": "asp.net-web-api",
-    "group": 2
+    "group": 2,
+    "nodesize": 11.28
   },
   {
     "name": "laravel",
-    "group": 6
+    "group": 6,
+    "nodesize": 32.12
   },
   {
     "name": "plsql",
-    "group": 2
+    "group": 2,
+    "nodesize": 10.32
   },
   {
     "name": "oracle",
-    "group": 2
+    "group": 2,
+    "nodesize": 30.19
   },
   {
     "name": "json",
-    "group": 6
+    "group": 6,
+    "nodesize": 25.38
   },
   {
     "name": "xml",
-    "group": 6
+    "group": 6,
+    "nodesize": 23.77
   },
   {
     "name": "flask",
-    "group": 1
+    "group": 1,
+    "nodesize": 9.39
   },
   {
     "name": "wordpress",
-    "group": 6
+    "group": 6,
+    "nodesize": 46.74
   },
   {
     "name": "java-ee",
-    "group": 8
+    "group": 8,
+    "nodesize": 22.45
   },
   {
     "name": "maven",
-    "group": 8
+    "group": 8,
+    "nodesize": 10.3
   },
   {
     "name": "jsp",
-    "group": 8
+    "group": 8,
+    "nodesize": 13.78
   },
   {
     "name": "bash",
-    "group": 5
+    "group": 5,
+    "nodesize": 23.91
   },
   {
     "name": "linux",
-    "group": 5
+    "group": 5,
+    "nodesize": 108.54
   },
   {
     "name": "angular2",
-    "group": 7
+    "group": 7,
+    "nodesize": 18.79
   },
   {
     "name": "typescript",
-    "group": 7
+    "group": 7,
+    "nodesize": 17.53
   },
   {
     "name": "codeigniter",
-    "group": 6
+    "group": 6,
+    "nodesize": 18.71
   },
   {
     "name": "tdd",
-    "group": 12
+    "group": 12,
+    "nodesize": 9.45
   },
   {
     "name": "agile",
-    "group": 12
+    "group": 12,
+    "nodesize": 12.22
   },
   {
     "name": "twitter-bootstrap",
-    "group": 6
+    "group": 6,
+    "nodesize": 31.05
   },
   {
     "name": "web-services",
-    "group": 8
+    "group": 8,
+    "nodesize": 18.94
   },
   {
     "name": "rest",
-    "group": 8
+    "group": 8,
+    "nodesize": 27.08
   },
   {
     "name": "testing",
-    "group": 11
+    "group": 11,
+    "nodesize": 8.95
   },
   {
     "name": "selenium",
-    "group": 11
+    "group": 11,
+    "nodesize": 12.7
   },
   {
     "name": "android-studio",
-    "group": 4
+    "group": 4,
+    "nodesize": 14.79
   },
   {
     "name": "redis",
-    "group": 3
+    "group": 3,
+    "nodesize": 13.85
   },
   {
     "name": "jenkins",
-    "group": 9
+    "group": 9,
+    "nodesize": 10.02
   },
   {
     "name": "docker",
-    "group": 9
+    "group": 9,
+    "nodesize": 22.85
   },
   {
     "name": "amazon-web-services",
-    "group": 9
+    "group": 9,
+    "nodesize": 30.05
   },
   {
     "name": "angular",
-    "group": 7
+    "group": 7,
+    "nodesize": 29.09
   },
   {
     "name": "osx",
-    "group": 4
+    "group": 4,
+    "nodesize": 12.58
   },
   {
     "name": "machine-learning",
-    "group": 1
+    "group": 1,
+    "nodesize": 44.21
   },
   {
     "name": "qt",
-    "group": 1
+    "group": 1,
+    "nodesize": 10.53
   },
   {
     "name": "windows",
-    "group": 5
+    "group": 5,
+    "nodesize": 19.71
   },
   {
     "name": "ubuntu",
-    "group": 5
+    "group": 5,
+    "nodesize": 11.98
   },
   {
     "name": "ionic-framework",
-    "group": 6
+    "group": 6,
+    "nodesize": 8.44
   },
   {
     "name": "elasticsearch",
-    "group": 3
+    "group": 3,
+    "nodesize": 10.82
   },
   {
     "name": "vue.js",
-    "group": 6
+    "group": 6,
+    "nodesize": 8.38
   },
   {
     "name": "r",
-    "group": 1
+    "group": 1,
+    "nodesize": 52.7
   },
   {
     "name": "embedded",
-    "group": 1
+    "group": 1,
+    "nodesize": 13.27
   },
   {
     "name": "go",
-    "group": 9
+    "group": 9,
+    "nodesize": 24.84
   },
   {
     "name": "visual-studio",
-    "group": 2
+    "group": 2,
+    "nodesize": 18.13
   },
   {
     "name": "postgresql",
-    "group": 3
+    "group": 3,
+    "nodesize": 39.03
   },
   {
     "name": "sql",
-    "group": 2
+    "group": 2,
+    "nodesize": 154.23
   },
   {
     "name": "unix",
-    "group": 5
+    "group": 5,
+    "nodesize": 15.67
   },
   {
     "name": "eclipse",
-    "group": 8
+    "group": 8,
+    "nodesize": 11.39
   },
   {
     "name": "vb.net",
-    "group": 2
+    "group": 2,
+    "nodesize": 23.56
   },
   {
     "name": "unity3d",
-    "group": 2
+    "group": 2,
+    "nodesize": 19.36
   },
   {
     "name": "devops",
-    "group": 9
+    "group": 9,
+    "nodesize": 9.81
   },
   {
     "name": "drupal",
-    "group": 6
+    "group": 6,
+    "nodesize": 8.25
   },
   {
     "name": "shell",
-    "group": 5
+    "group": 5,
+    "nodesize": 11.63
   },
   {
     "name": "bootstrap",
-    "group": 6
+    "group": 6,
+    "nodesize": 13.28
   },
   {
     "name": "xamarin",
-    "group": 2
+    "group": 2,
+    "nodesize": 11.18
   },
   {
     "name": "azure",
-    "group": 2
+    "group": 2,
+    "nodesize": 13.68
   },
   {
     "name": "mvc",
-    "group": 2
+    "group": 2,
+    "nodesize": 10.92
   },
   {
     "name": "haskell",
-    "group": 10
+    "group": 10,
+    "nodesize": 11.18
   },
   {
     "name": "api",
-    "group": 8
+    "group": 8,
+    "nodesize": 8.61
   },
   {
     "name": "twitter-bootstrap-3",
-    "group": 6
+    "group": 6,
+    "nodesize": 10.13
   },
   {
     "name": "regex",
-    "group": 13
+    "group": 13,
+    "nodesize": 9.46
   },
   {
     "name": "perl",
-    "group": 13
+    "group": 13,
+    "nodesize": 19.38
   },
   {
     "name": "cloud",
-    "group": 9
+    "group": 9,
+    "nodesize": 10.66
   },
   {
     "name": "photoshop",
-    "group": 6
+    "group": 6,
+    "nodesize": 12.62
   },
   {
     "name": "powershell",
-    "group": 5
+    "group": 5,
+    "nodesize": 9.85
   },
   {
     "name": "matlab",
-    "group": 1
+    "group": 1,
+    "nodesize": 27.21
   }
 ],"links":[
   {
