@@ -4,7 +4,11 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Grid from 'material-ui/Grid'
-import Chart1 from './Viz1'
+import Chart1 from './components/Viz1'
+// import Chart2 from './components/Viz2'
+import {Sigma, RandomizeNodePositions, RelativeSize} from 'react-sigma';
+let myGraph = {nodes:[{id:"n1", label:"Alice"}, {id:"n2", label:"Rabbit"}], edges:[{id:"e1",source:"n1",target:"n2",label:"SEES"}]};
+
 // import {Sigma, RandomizeNodePositions, RelativeSize} from 'react-sigma';
 // import {cypher} from './Neo4j.js'
 
@@ -66,12 +70,16 @@ class App extends Component {
         <div>
             <TopAppBar/>
             <div>div1</div>
-            <div>div2</div>
+            <div>
+                <Sigma graph={myGraph} settings={{drawEdges: true, clone: false}}>
+                    <RelativeSize initialSize={15}/>
+                    <RandomizeNodePositions/>
+                </Sigma>
+            </div>
             <div>
                 <Chart1 data={[5,10,1,3]} size={[500,500]}/>
             </div>
         </div>
-
     );
   }
 }
