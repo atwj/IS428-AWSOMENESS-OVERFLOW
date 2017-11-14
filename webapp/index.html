@@ -7,7 +7,7 @@
 
     <style type="text/css">
 svg {
-  border: 1px solid #ccc;
+
 }
 body {
   font: 10px sans-serif;
@@ -78,7 +78,7 @@ line.link {
 <body>
     <div id="sidebar">
         <div class="item-group">
-            <label class="item-label">Filter HELLO!</label>
+            <label class="item-label">Cluster Filter</label>
             <div id="filterContainer" class="filterContainer checkbox-interaction-group"></div>
         </div>
 
@@ -88,11 +88,11 @@ line.link {
         var width = 1270,     // svg width
             height = 700,     // svg height
             dr = 4,      // default point radius
-            off = 15,    // cluster hull offset
+            off = 20,    // cluster hull offset
             collapse = {}, // collapsed clusters
             group = [],
             data, net, force, hullg, hull, linkg, link, nodeg, node, label;
-
+        var q = 0;
         var curve = d3.svg.line()
             .interpolate("cardinal-closed")
             .tension(.85);
@@ -214,7 +214,9 @@ line.link {
                     l = lm[i] || (lm[i] = { source: u, target: v, size: 0 });
                 l.size += 1;
             }
+
             for (i in lm) { links.push(lm[i]); }
+
             return { nodes: nodes, links: links };
         }
 
@@ -251,14 +253,15 @@ line.link {
         var body = d3.select("body");
 
         var vis = body.append("svg")
-            .attr("width", width)
-            .attr("height", height)
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 " + width + " " + height)
             .call(d3.behavior.zoom().on("zoom", function () {
                 vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
             }))
             .append("g");
 
-        d3.json("graph.json", function (json) {
+        d3.json("stackoverflow.json", function (json) {
             data = json;
             for (var i = 0; i < data.links.length; ++i) {
                 o = data.links[i];
@@ -279,13 +282,13 @@ line.link {
                 .style("text-anchor", "middle")
                 .style("fill", "#555")
                 .style("font-family", "Arial")
-                .style("font-size", 12)
+                .style("font-size", function (d) { return d.nodesize > 80 ? 28 : 12 })
                 .style("visibility", "visible");
             init();
 
             vis.attr("opacity", 1e-6)
                 .transition()
-                .duration(500)
+                .duration(1000)
                 .attr("opacity", 1);
 
         });
@@ -310,13 +313,13 @@ line.link {
                     // nodes of another group or other group node or between two group nodes.
                     //
                     // The latter was done to keep the single-link groups ('blue', rose, ...) close.
-                    return 120 +
+                    return 300 +
                         Math.min(20 * Math.min((n1.size || (n1.group != n2.group ? n1.group_data.size : 0)),
                             (n2.size || (n1.group != n2.group ? n2.group_data.size : 0))),
                             -30 +
                             30 * Math.min((n1.link_count || (n1.group != n2.group ? n1.group_data.link_count : 0)),
                                 (n2.link_count || (n1.group != n2.group ? n2.group_data.link_count : 0))),
-                            100);
+                            600);
                     //return 150;
                 })
                 .linkStrength(function (l, i) {
@@ -360,7 +363,8 @@ line.link {
                 // .attr("class", function (d) { return "node" + (d.size ? "" : " leaf"); })
                 .attr("class", function (d) { return "node" + d.group; })
                 // .attr("r", function (d) { console.log(d.nodesize); return d.size ? d.size + dr : dr + 1; })
-                .attr("r", function (d) { return d.nodesize ? ((d.nodesize / 7036.41) * 100) : dr + 1; })
+                //.attr("r", function (d) { return d.nodesize ? ((d.nodesize / 7036.41) * 100) : dr + 1; })
+                .attr("r", function (d) { return d.nodesize > 80 ? d.nodesize / 2 : 5 })
                 .attr("cx", function (d) { return d.x; })
                 .attr("cy", function (d) { return d.y; })
                 .style("fill", function (d) { return fill(d.group); })
@@ -389,7 +393,7 @@ line.link {
                     .attr("cy", function (d) { return d.y; });
 
                 label.attr("x", function (d) { return d.x; })
-                    .attr("y", function (d) { return d.y - 10; })
+                    .attr("y", function (d) { return d.nodesize > 80 ? d.y - 55 :d.y - 10; })
                     .attr("class", function (d) { return "mytext" + d.group });
             });
 
@@ -422,6 +426,7 @@ line.link {
                     .append("div")
                     .attr("class", "checkbox-container")
                     .append("label")
+
                     .each(function (d) {
                         // create checkbox for each data
                         d3.select(this).append("input")
@@ -436,11 +441,53 @@ line.link {
                                 var lVisibility = this.checked ? "visible" : "hidden";
                                 filterGraph(d, lVisibility);
                             })
+
+
                         d3.select(this).append("span")
                             .text(function (d) {
+                                switch (d) {
+                                    case 1:
+                                        return "iOS ";
+                                    case 2:
+                                        return "Excel ";
+                                    case 3:
+                                        return "Java ";
+                                    case 4:
+                                        return "Python ";
+                                    case 5:
+                                        return "Ruby ";
+                                    case 6:
+                                        return "Linux ";
+                                    case 7:
+                                        return "C# ";
+                                    case 8:
+                                        return "Javascript ";
+                                    case 9:
+                                        return "Facebook ";
+                                    case 10:
+                                        return "php ";
+                                    case 11:
+                                        return "r ";
+                                    case 12:
+                                        return "Flash ";
+                                    case 13:
+                                        return "Perl ";
+                                    case 14:
+                                        return "Excel ";
+                                }
                                 return d;
-                            });
-                    });
+                            })
+                            .append("svg")
+                            .attr("width", "10px")
+                            .attr("height", "10px")
+                            .append("circle")
+                            .attr("r", 10)
+                            .attr("cx", 5)
+                            .attr("cy", 5)
+                            .style("fill", fill(d))
+                    })
+
+
             }
 
             function filterGraph(aType, aVisibility) {
@@ -451,9 +498,9 @@ line.link {
                 var textClass = document.getElementsByClassName("mytext" + aType);
 
                 for (i in textClass) {
-                     var nodeX = nodeClass[i].getAttribute("cx");
-                     var nodeY = nodeClass[i].getAttribute("cy");
-                   
+                    var nodeX = nodeClass[i].getAttribute("cx");
+                    var nodeY = nodeClass[i].getAttribute("cy");
+
                     for (var x = 0; x < link[0].length; x++) {
                         var fliterX1 = link[0][x].getAttribute("x1");
                         var fliterY1 = link[0][x].getAttribute("y1");
@@ -461,7 +508,7 @@ line.link {
                         var fliterX2 = link[0][x].getAttribute("x2");
                         var fliterY2 = link[0][x].getAttribute("y2");
 
-                        if((fliterX1 == nodeX && fliterY1 == nodeY) || (fliterX2 == nodeX && fliterY2 == nodeY)  ){
+                        if ((fliterX1 == nodeX && fliterY1 == nodeY) || (fliterX2 == nodeX && fliterY2 == nodeY)) {
                             link[0][x].style.visibility = aVisibility;
                         }
                     }
