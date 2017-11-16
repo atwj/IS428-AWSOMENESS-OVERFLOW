@@ -6,6 +6,7 @@ import Typography from 'material-ui/Typography';
 import Grid from 'material-ui/Grid'
 import Chart1 from './components/Viz1'
 // import Chart2 from './components/Viz2'
+import data from './components/stackoverflow.json'
 import {Sigma, RandomizeNodePositions, RelativeSize} from 'react-sigma';
 let myGraph = {nodes:[{id:"n1", label:"Alice"}, {id:"n2", label:"Rabbit"}], edges:[{id:"e1",source:"n1",target:"n2",label:"SEES"}]};
 
@@ -77,7 +78,7 @@ class App extends Component {
                 </Sigma>
             </div>
             <div>
-                <Chart1 data={[5,10,1,3]} size={[500,500]}/>
+                <Chart1 data={data} size={[1270,700]}/>
             </div>
         </div>
     );

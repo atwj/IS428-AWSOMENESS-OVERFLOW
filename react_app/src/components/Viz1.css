@@ -1,0 +1,60 @@
+circle.node {
+    fill: lightsteelblue;
+    stroke: #555;
+    stroke-width: 3px;
+}
+circle.leaf {
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+path.hull {
+    fill: lightsteelblue;
+    fill-opacity: 0.3;
+}
+line.link {
+    stroke: #333;
+    stroke-opacity: 0.5;
+    pointer-events: none;
+}
+
+#sidebar {
+    position: absolute;
+    z-index: 2;
+    background-color: #FFF;
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #6895b4;
+    min-height: 3px;
+    min-width: 8px;
+}
+.item-group {
+    margin-bottom: 5px;
+}
+.item-group .item-label {
+    width: 90px;
+    text-align: right;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    position: relative;
+    min-height: 1px;
+    margin-top: 5px;
+    display: inline;
+    padding-right: 5px;
+    font-size: .90em;
+}
+.checkbox-interaction-group {
+    margin-left: 10px;
+    margin-top: 5px;
+    clear: both;
+}
+.checkbox-container {
+    display: block;
+    min-height: 22px;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+.checkbox-container label {
+    display:inline;
+    margin-bottom: 0px;
+}
