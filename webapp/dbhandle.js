@@ -1,13 +1,22 @@
 var axios = require('axios')
 
-// Retrieve graph for given tag for relationships of type: comments, answers, parent_of and last_edit
-var query = function(statements, params, output, transform){
+/*
+* Usage
+*
+* required arguments: statements, an array of statement of the following object
+* {
+*   statement: 'MATCH (n:User{ID: $id})-[:TYPE]-(a) return *',
+*   parameters : {'id': 'Amos'},
+*   resultDataContents: ['graph,'row'] // Either one or both
+* }
+* optional: transform: Series of functions to apply on the data before being passed to the resulting then() or catch()
+* method.
+* */
+var query = function(statements, transform){
     var config = {
         headers:{'Content-type':'json','Accept':'application/json; charset=utf-8', 'X-stream':true},
         data: {
-            "statements":statements,
-            "parameters": params,
-            "resultDataContents":output
+            "statements":statements
         }
     }
     if (typeof transform !== 'undefined') {
