@@ -261,7 +261,7 @@ line.link {
             }))
             .append("g");
 
-        d3.json("stackoverflow.json", function (json) {
+        d3.json("data/stackoverflow.json", function (json) {
             data = json;
             for (var i = 0; i < data.links.length; ++i) {
                 o = data.links[i];
