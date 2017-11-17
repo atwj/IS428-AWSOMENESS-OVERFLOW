@@ -23,16 +23,16 @@
         // returns promise
         return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
     }
-    let q = d3.queue()
-    let statements = [{
-        "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-        "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
-        "RETURN * LIMIT 25 order by",
-        "parameters": {
-            "tag":"tableau"
-        },
-        "resultDataContents":["graph","row"],
-    }
+    let statements = [
+        {
+            "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+            "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
+            "RETURN * LIMIT 25",
+            "parameters": {
+                "tag":"tableau"
+            },
+            "resultDataContents":["graph","row"],
+        }
     ]
     let vis = function(data){
         let svg = d3.select('body')
@@ -49,8 +49,27 @@
             .attr('color', 'black')
     }
 
-    var promise = query(statements,undefined)
+    let pipe = function(data) {
+        let resultlists = data.results.map(o => o.data).reduce((a,v,[]) => a.concat(v))
+        console.log(resultlists)
+        let graphs = resultlists.map(o => o.graph)
+        console.log(graphs)
+        let links = graphs.map(o => o.relationships)
+        links = links.map(o => o.reduce((a,v,[])=> a.concat(v)))
+        let nodes = graphs.map(o => o.nodes.map(p => p))
+        let output = []
+        for(let i = 0; i <nodes.length; i++){
+            let sub = nodes[i]
+            for(let j = 0; j < sub.length; j++){
+                output.push(sub[j])
+            }
+        }
+        console.log(output)
+        console.log(nodes)
+    }
+    let promise = query(statements,[JSON.parse,pipe])
     promise.then((data) => vis(data.data))
+        .catch(e => console.log(e))
 </script>
 </body>
 </html>
