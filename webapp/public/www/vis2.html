@@ -3,11 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <style></style>
+    <style>
+        .links line {
+            stroke: #999;
+            stroke-opacity: 0.6;
+        }
+
+        .nodes circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+
+        #container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/sigma.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.forceAtlas2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.noverlap.min.js"></script>
 </head>
 <body>
+<!--<svg width="960" height="600"></svg>-->
+<div id="container"></div>
 <script>
     let query = function(statements, transform){
         var config = {
@@ -27,48 +48,132 @@
         {
             "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
             "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
-            "RETURN * LIMIT 25",
+            "RETURN {from:from,rel:r,to:to}",
             "parameters": {
                 "tag":"tableau"
             },
-            "resultDataContents":["graph","row"],
+            "resultDataContents":["row"],
         }
     ]
     let vis = function(data){
-        let svg = d3.select('body')
-            .append('svg')
-            .attr('width', 1000)
-            .attr('height',500)
-        svg.selectAll('circle')
-            .data([2,4,6,8,10])
-            .enter()
-            .append('circle')
-            .attr('cy',d => d * 10)
-            .attr('cx',d => 10* d)
-            .attr('r', d=> d)
-            .attr('color', 'black')
-    }
+        let svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
 
-    let pipe = function(data) {
-        let resultlists = data.results.map(o => o.data).reduce((a,v,[]) => a.concat(v))
-        console.log(resultlists)
-        let graphs = resultlists.map(o => o.graph)
-        console.log(graphs)
-        let links = graphs.map(o => o.relationships)
-        links = links.map(o => o.reduce((a,v,[])=> a.concat(v)))
-        let nodes = graphs.map(o => o.nodes.map(p => p))
-        let output = []
-        for(let i = 0; i <nodes.length; i++){
-            let sub = nodes[i]
-            for(let j = 0; j < sub.length; j++){
-                output.push(sub[j])
-            }
+        let color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        let simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.UserId; }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        let link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+        let node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(data.nodes)
+            .enter().append("circle")
+            .attr("r", 5)
+            .attr("fill", function(d) { return color(d.group); })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        node.append("title")
+            .text(function(d) { return d.id; });
+
+        simulation
+            .nodes(data.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(data.links);
+
+        function ticked() {
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            node
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
         }
-        console.log(output)
+
+
+        function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    }
+    let sigmavis = function(data){
+        let s = new sigma('container')
+
+        data.nodes.forEach((d, i, a) => {
+            s.graph.addNode({
+                id: d.UserId,
+                label: d.DisplayName,
+                x: Math.random() * 1500,
+                y:Math.random() * 1000,
+                size: 1,
+                color: '#f00'
+            })
+        })
+
+        data.links.forEach((d,i) => {
+            s.graph.addEdge({
+                id: i,
+                source: d.source,
+                target:d.target
+            })
+        })
+
+        // Finally, let's ask our sigma instance to refresh:
+        s.refresh();
+        s.configForceAtlas2({
+            outboundAttractionDistribution:true,
+            adjustSizes: true
+        })
+//        s.startForceAtlas2()
+    }
+    let pipe = function(data) {
+        let resultlists = data.results.map(o => o.data).reduce((a,v,[]) => a.concat(v[0]))
+        let links = resultlists.map(function(o){ return {"source": o.row[0].from.UserId, "target": o.row[0].to.UserId, "time":o.row[0].rel.CreationDate}})
+        let nodesmap = {}
+        for(let i = 0; i < resultlists.length; i ++){
+            let row = resultlists[i].row[0]
+            nodesmap[row.from.UserId] = row.from
+            nodesmap[row.to.UserId] = row.to
+        }
+        let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
         console.log(nodes)
+        return {
+            "nodes":nodes,
+            "links":links
+        }
     }
     let promise = query(statements,[JSON.parse,pipe])
-    promise.then((data) => vis(data.data))
+    promise.then((data) => sigmavis(data.data))
         .catch(e => console.log(e))
 </script>
 </body>
