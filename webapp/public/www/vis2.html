@@ -129,7 +129,7 @@
     }
     let sigmavis = function(data){
 
-        sigma.settings.nodesPowRatio = 1;
+        sigma.settings.nodesPowRatio = 0.5;
         sigma.settings.autoRescale = false;
 
         let s = new sigma({
@@ -142,7 +142,7 @@
                     defaultEdgeColor: '#ccc',
                     animationsTime: 5000,
                     drawLabels: false,
-                    batchEdgesDrawing: true,
+                    //batchEdgesDrawing: true,
                     hideEdgesOnMove: true,
                     sideMargin: 1,
 
@@ -185,10 +185,10 @@
         s.refresh();
         s.configForceAtlas2({
 
-            worker: true,
-            autoStop: false,
-            background: false,
-            adjustSizes: true,
+//            worker: true,
+//            autoStop: false,
+//            background: false,
+//            adjustSizes: true,
             gravity:20
         })
         s.startForceAtlas2()
