@@ -27,6 +27,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.noverlap.min.js"></script>
 </head>
 <body>
+<button id="stop">Stop animation</button>
 <!--<svg width="960" height="600"></svg>-->
 <div id="container"></div>
 <script>
@@ -127,16 +128,35 @@
         }
     }
     let sigmavis = function(data){
-        let s = new sigma('container')
+
+        sigma.settings.nodesPowRatio = 1;
+        sigma.settings.autoRescale = false;
+
+        let s = new sigma({
+            renderer: {
+                container: document.getElementById('container'),
+                type: 'canvas',
+                settings: {
+                    defaultNodeColor: '#ec5148',
+                    edgeColor: 'default',
+                    defaultEdgeColor: '#ccc',
+                    animationsTime: 5000,
+                    drawLabels: false,
+                    batchEdgesDrawing: true,
+                    hideEdgesOnMove: true,
+                    sideMargin: 1,
+
+                }
+            },
+        });
 
         data.nodes.forEach((d, i, a) => {
             s.graph.addNode({
                 id: d.UserId,
                 label: d.DisplayName,
-                x: Math.random() * 1500,
+                x: Math.random() * 1000,
                 y:Math.random() * 1000,
                 size: 1,
-                color: '#f00'
             })
         })
 
@@ -148,13 +168,32 @@
             })
         })
 
+        isStop = false
+        button = document.getElementById('stop')
+        button.onclick = () => {
+            if (isStop) {
+                s.startForceAtlas2()
+            }else{
+                s.stopForceAtlas2()
+                isStop = true
+            }
+        }
+        nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
+        binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
+        s.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
         // Finally, let's ask our sigma instance to refresh:
         s.refresh();
         s.configForceAtlas2({
-            outboundAttractionDistribution:true,
-            adjustSizes: true
+
+            worker: true,
+            autoStop: false,
+            background: false,
+            adjustSizes: true,
+            gravity:20
         })
-//        s.startForceAtlas2()
+        s.startForceAtlas2()
+      s
+
     }
     let pipe = function(data) {
         let resultlists = data.results.map(o => o.data).reduce((a,v,[]) => a.concat(v[0]))
