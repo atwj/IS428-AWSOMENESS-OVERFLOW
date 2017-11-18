@@ -147,13 +147,8 @@
                     defaultEdgeColor: '#ccc',
                     animationsTime: 5000,
                     drawLabels: false,
-<<<<<<< HEAD
-                    batchEdgesDrawing: true,
-                    hideEdgesOnMove: false,
-=======
                     //batchEdgesDrawing: true,
                     hideEdgesOnMove: true,
->>>>>>> origin/master
                     sideMargin: 1,
                 }
             },
@@ -193,21 +188,14 @@
         // Finally, let's ask our sigma instance to refresh:
         s.refresh();
         s.configForceAtlas2({
-<<<<<<< HEAD
-            worker: true,
-            autoStop: false,
-            background: false,
-            adjustSizes: true,
-=======
 
 //            worker: true,
 //            autoStop: false,
 //            background: false,
 //            adjustSizes: true,
->>>>>>> origin/master
             gravity:20
-        })
-//        s.startForceAtlas2()
+        });
+        s.startForceAtlas2()
       
 
     }
