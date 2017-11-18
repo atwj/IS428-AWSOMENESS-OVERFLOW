@@ -158,6 +158,18 @@
         ]
     }
     let sigmavis = function(data){
+        //JSNETWORKX GRAPH
+        var G = new jsnx.Graph();
+        data.nodes.forEach((d, i, a) => {
+            G.addNode(d.UserId)
+        });
+
+        data.links.forEach((d,i) => {
+            G.addEdge(d.source, d.target)
+        });
+
+        let results = new jsnx.genBetweennessCentrality(G);
+
         sigma.settings.nodesPowRatio = 0.5;
         sigma.settings.autoRescale = false;
 
@@ -197,6 +209,22 @@
             })
         })
 
+        results.then(function(a){
+            let obj = a._stringValues
+            let minVal = Math.sqrt(Math.min.apply(null,Object.values(obj)))
+            let maxVal = Math.sqrt(Math.max.apply(null,Object.values(obj)))
+            var colorSeq = d3.scaleSequential()
+                .domain([minVal,maxVal])
+                .interpolator(d3.interpolateRgb.gamma(3.0)("red","blue"))
+            Object.keys(obj).forEach(function(k) {
+//                console.log(k, obj[k])
+                s.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
+                //s.graph.nodes(k).color = colorSeq(obj[k])
+            });
+            s.refresh();
+        });
+
+        //PAUSE ANIMATION
         isStop = false
         button = document.getElementById('stop')
         button.onclick = () => {
@@ -208,6 +236,8 @@
                 isStop = true
             }
         }
+
+        //NODE SIZE BASED ON DEGREE
         nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
         binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
         s.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
