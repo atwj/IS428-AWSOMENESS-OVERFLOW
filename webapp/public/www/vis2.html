@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+        crossorigin="anonymous">
     <style>
         .links line {
             stroke: #999;
@@ -16,208 +19,365 @@
 
         #container {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            width: 80%;
+            height: 80%;
         }
+        .navbar{
+            border-bottom: 0.5px solid #999;
+            border-top: 2px solid orange;
+        }
+        #stop{
+            margin-left:0px;
+        }
+        #sidebar {
+                position: fixed;
+                bottom: 0;
+                background: #FFF;
+                
+                padding-left:5%;
+                
+                min-height: 10%;
+                min-width: 80%;
+        }
+/*charts*/
+.chart {
+    display: inline-block;
+    height: 50px;
+    margin-bottom: 10px;
+
+  }
+
+  .reset {
+    padding-left: 1em;
+    font-size: smaller;
+    color: #ccc;
+  }
+
+  .background.bar {
+    fill: #ccc;
+    
+  }
+
+  .foreground.bar {
+    fill: steelblue;
+  }
+
+  .brush-handle {
+    fill: #eee;
+    stroke: #666;
+  }
+
+  #hour-chart {
+    width: 260px;
+  }
+
+  #delay-chart {
+    width: 230px;
+  }
+
+  #distance-chart {
+    width: 430px;
+  }
+
+  #date-chart {
+    width: 920px;
+  }
+
+  #flight-list {
+    min-height: 1024px;
+  }
+
+  #flight-list .date,
+  #flight-list .day {
+    margin-bottom: .4em;
+  }
+
+  #flight-list .flight {
+    line-height: 1.5em;
+    background: #eee;
+    width: 925px;
+    margin-bottom: 1px;
+  }
+
+  #flight-list .time {
+    color: #999;
+  }
+
+  #flight-list .flight div {
+    display: inline-block;
+  }
+
+  #flight-list div.time {
+    width: 100px;
+    text-align: left;
+  }
+
+  #flight-list div.origin {
+    width: 50px;
+    text-align: right;
+    padding-right: 15px;
+  }
+
+  #flight-list div.destination {
+    width: 100px;
+    text-align: left;
+    padding-left: 15px;
+  }
+
+  #flight-list div.distance {
+    width: 100px;
+    text-align: left;
+  }
+
+  #flight-list div.delay {
+    width: 120px;
+    padding-right: 0px;
+    text-align: right;
+  }
+
+  #flight-list .early {
+    color: green;
+  }
+
+  aside {
+    position: absolute;
+    left: 740px;
+    font-size: smaller;
+    width: 220px;
+  }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/sigma.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.forceAtlas2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.noverlap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/sigma.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.forceAtlas2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.noverlap.min.js"></script>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js' defer></script>
+<script src='https://d3js.org/d3.v4.min.js' defer></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
+<script src='../js/vis2.js' defer></script>
 </head>
+
 <body>
-<button id="stop">Stop animation</button>
-<!--<svg width="960" height="600"></svg>-->
-<div id="container"></div>
-<script>
-    let query = function(statements, transform){
-        var config = {
-            method:'post',
-            headers:{'Content-type':'application/json','Accept':'application/json; charset=utf-8', 'X-stream':true},
-            data: {
-                "statements":statements
-            }
-        }
-        if (typeof transform !== 'undefined') {
-            config.transformResponse = transform
-        }
-        // returns promise
-        return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
-    }
-    let statements = [
-        {
-            "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-            "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
-            "RETURN {from:from,rel:r,to:to}",
-            "parameters": {
-                "tag":"tableau"
-            },
-            "resultDataContents":["row"],
-        },
-        {
-            "statement": "MATCH (t:Tag {TagId: $tag}--(p:Posts" +
-            "WITH p MATCH (from:User)-[r:LAST_EDITED]-(p)-[:CREATES]-(to:User)" +
-            "RETURN {from:from, rel:r, to:to}"
-        }
-    ]
-    let vis = function(data){
-        let svg = d3.select("svg"),
-            width = +svg.attr("width"),
-            height = +svg.attr("height");
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01"
+            aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a class="navbar-brand" href="#"><img src="..\image\logo.png" height="30" width="100"></a>
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Cluster of Tags</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="vis2.html">Link<span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
 
-        let color = d3.scaleOrdinal(d3.schemeCategory20);
+        </div>
+    </nav>
+    <br/>
+    <div id="container"></div>
+    <div id="sidebar">
+        <div id='charts'>
+            <div id='date-chart' class='chart'>
+                <div class='title'>Date</div>
+                <button id="stop">Stop animation</button>
+                <!--<svg width="960" height="600"></svg>-->
+                
+            </div>
+        </div>
 
-        let simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function(d) { return d.UserId; }))
-            .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(width / 2, height / 2));
-
-        let link = svg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(data.links)
-            .enter().append("line")
-            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
-
-        let node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(data.nodes)
-            .enter().append("circle")
-            .attr("r", 5)
-            .attr("fill", function(d) { return color(d.group); })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-
-        node.append("title")
-            .text(function(d) { return d.id; });
-
-        simulation
-            .nodes(data.nodes)
-            .on("tick", ticked);
-
-        simulation.force("link")
-            .links(data.links);
-
-        function ticked() {
-            link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
-
-            node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
-        }
-
-
-        function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-        }
-
-        function dragended(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-    }
-    let sigmavis = function(data){
-
-        sigma.settings.nodesPowRatio = 0.5;
-        sigma.settings.autoRescale = false;
-
-        let s = new sigma({
-            renderer: {
-                container: document.getElementById('container'),
-                type: 'canvas',
-                settings: {
-                    defaultNodeColor: '#ec5148',
-                    edgeColor: 'default',
-                    defaultEdgeColor: '#ccc',
-                    animationsTime: 5000,
-                    drawLabels: false,
-                    //batchEdgesDrawing: true,
-                    hideEdgesOnMove: true,
-                    sideMargin: 1,
+        <script>
+            let query = function (statements, transform) {
+                var config = {
+                    method: 'post',
+                    headers: { 'Content-type': 'application/json', 'Accept': 'application/json; charset=utf-8', 'X-stream': true },
+                    data: {
+                        "statements": statements
+                    }
                 }
-            },
-        });
-
-        data.nodes.forEach((d, i, a) => {
-            s.graph.addNode({
-                id: d.UserId,
-                label: d.DisplayName,
-                x: Math.random() * 1000,
-                y:Math.random() * 1000,
-                size: 1,
-            })
-        })
-
-        data.links.forEach((d,i) => {
-            s.graph.addEdge({
-                id: i,
-                source: d.source,
-                target:d.target
-            })
-        })
-
-        isStop = false
-        button = document.getElementById('stop')
-        button.onclick = () => {
-            if (isStop) {
-                s.startForceAtlas2()
-            }else{
-                s.stopForceAtlas2()
-                isStop = true
+                if (typeof transform !== 'undefined') {
+                    config.transformResponse = transform
+                }
+                // returns promise
+                return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
             }
-        }
-        nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
-        binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
-        s.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
-        // Finally, let's ask our sigma instance to refresh:
-        s.refresh();
-        s.configForceAtlas2({
+            let statements = [
+                {
+                    "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                    "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
+                    "RETURN {from:from,rel:r,to:to}",
+                    "parameters": {
+                        "tag": "tableau"
+                    },
+                    "resultDataContents": ["row"],
+                },
+                {
+                    "statement": "MATCH (t:Tag {TagId: $tag}--(p:Posts" +
+                    "WITH p MATCH (from:User)-[r:LAST_EDITED]-(p)-[:CREATES]-(to:User)" +
+                    "RETURN {from:from, rel:r, to:to}"
+                }
+            ]
+            let vis = function (data) {
+                let svg = d3.select("svg"),
+                    width = +svg.attr("width"),
+                    height = +svg.attr("height");
 
-//            worker: true,
-//            autoStop: false,
-//            background: false,
-//            adjustSizes: true,
-            gravity:20
-        });
-        s.startForceAtlas2()
-      
+                let color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    }
-    let pipe = function(data) {
-        let resultlists = data.results.map(o => o.data).reduce((a,v,[]) => a.concat(v[0]))
-        let links = resultlists.map(function(o){ return {"source": o.row[0].from.UserId, "target": o.row[0].to.UserId, "time":o.row[0].rel.CreationDate}})
-        let nodesmap = {}
-        for(let i = 0; i < resultlists.length; i ++){
-            let row = resultlists[i].row[0]
-            nodesmap[row.from.UserId] = row.from
-            nodesmap[row.to.UserId] = row.to
-        }
-        let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
-        console.log(nodes)
-        return {
-            "nodes":nodes,
-            "links":links
-        }
-    }
-    let promise = query(statements,[JSON.parse,pipe])
-    promise.then((data) => sigmavis(data.data))
-        .catch(e => console.log(e))
-</script>
+                let simulation = d3.forceSimulation()
+                    .force("link", d3.forceLink().id(function (d) { return d.UserId; }))
+                    .force("charge", d3.forceManyBody())
+                    .force("center", d3.forceCenter(width / 2, height / 2));
+
+                let link = svg.append("g")
+                    .attr("class", "links")
+                    .selectAll("line")
+                    .data(data.links)
+                    .enter().append("line")
+                    .attr("stroke-width", function (d) { return Math.sqrt(d.value); });
+
+                let node = svg.append("g")
+                    .attr("class", "nodes")
+                    .selectAll("circle")
+                    .data(data.nodes)
+                    .enter().append("circle")
+                    .attr("r", 5)
+                    .attr("fill", function (d) { return color(d.group); })
+                    .call(d3.drag()
+                        .on("start", dragstarted)
+                        .on("drag", dragged)
+                        .on("end", dragended));
+
+                node.append("title")
+                    .text(function (d) { return d.id; });
+
+                simulation
+                    .nodes(data.nodes)
+                    .on("tick", ticked);
+
+                simulation.force("link")
+                    .links(data.links);
+
+                function ticked() {
+                    link
+                        .attr("x1", function (d) { return d.source.x; })
+                        .attr("y1", function (d) { return d.source.y; })
+                        .attr("x2", function (d) { return d.target.x; })
+                        .attr("y2", function (d) { return d.target.y; });
+
+                    node
+                        .attr("cx", function (d) { return d.x; })
+                        .attr("cy", function (d) { return d.y; });
+                }
+
+
+                function dragstarted(d) {
+                    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                }
+
+                function dragged(d) {
+                    d.fx = d3.event.x;
+                    d.fy = d3.event.y;
+                }
+
+                function dragended(d) {
+                    if (!d3.event.active) simulation.alphaTarget(0);
+                    d.fx = null;
+                    d.fy = null;
+                }
+            }
+            let sigmavis = function (data) {
+
+                sigma.settings.nodesPowRatio = 0.5;
+                sigma.settings.autoRescale = false;
+
+                let s = new sigma({
+                    renderer: {
+                        container: document.getElementById('container'),
+                        type: 'canvas',
+                        settings: {
+                            defaultNodeColor: '#ec5148',
+                            edgeColor: 'default',
+                            defaultEdgeColor: '#ccc',
+                            animationsTime: 5000,
+                            drawLabels: false,
+                            //batchEdgesDrawing: true,
+                            hideEdgesOnMove: true,
+                            sideMargin: 1,
+                        }
+                    },
+                });
+
+                data.nodes.forEach((d, i, a) => {
+                    s.graph.addNode({
+                        id: d.UserId,
+                        label: d.DisplayName,
+                        x: Math.random() * 1000,
+                        y: Math.random() * 1000,
+                        size: 1,
+                    })
+                })
+
+                data.links.forEach((d, i) => {
+                    s.graph.addEdge({
+                        id: i,
+                        source: d.source,
+                        target: d.target
+                    })
+                })
+
+                isStop = false
+                button = document.getElementById('stop')
+                button.onclick = () => {
+                    if (isStop) {
+                        s.startForceAtlas2()
+                    } else {
+                        s.stopForceAtlas2()
+                        isStop = true
+                    }
+                }
+                nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
+                binner = d3.scaleQuantize().domain([Math.min.apply(null, nodeArr), Math.max.apply(null, nodeArr)]).range([2, 4, 8, 16, 32])
+                s.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
+                // Finally, let's ask our sigma instance to refresh:
+                s.refresh();
+                s.configForceAtlas2({
+
+                    //            worker: true,
+                    //            autoStop: false,
+                    //            background: false,
+                    //            adjustSizes: true,
+                    gravity: 20
+                });
+                s.startForceAtlas2()
+
+
+            }
+            let pipe = function (data) {
+                let resultlists = data.results.map(o => o.data).reduce((a, v, []) => a.concat(v[0]))
+                let links = resultlists.map(function (o) { return { "source": o.row[0].from.UserId, "target": o.row[0].to.UserId, "time": o.row[0].rel.CreationDate } })
+                let nodesmap = {}
+                for (let i = 0; i < resultlists.length; i++) {
+                    let row = resultlists[i].row[0]
+                    nodesmap[row.from.UserId] = row.from
+                    nodesmap[row.to.UserId] = row.to
+                }
+                let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
+                console.log(nodes)
+                return {
+                    "nodes": nodes,
+                    "links": links
+                }
+            }
+            let promise = query(statements, [JSON.parse, pipe])
+            promise.then((data) => sigmavis(data.data))
+                .catch(e => console.log(e))
+        </script>
 </body>
+
 </html>
