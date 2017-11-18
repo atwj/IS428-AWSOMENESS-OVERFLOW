@@ -67,8 +67,8 @@
         },
         {
             "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
-                "WITH p MATCH (from:User)-[:CREATES]-(:Posts)-[r:ANSWERS]->(p)-[:CREATES]-(to:User)"+
-                "RETURN {from:from, rel:r, to:to}",
+                "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)-[r:ANSWERS]->(p)-[:CREATES]-(to:User)"+
+                "RETURN {from:from, ANSWERS:a.CreationDate, to:to}",
             "parameters":{
                 "tag":"tableau"
             },
@@ -76,8 +76,8 @@
         },
         {
             "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
-            "WITH p MATCH (from:User)-[:CREATES]-(:Posts)<-[r:PARENT_OF]-(p)-[:CREATES]-(to:User)"+
-            "RETURN {from:from, rel:r, to:to}",
+            "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)<-[r:PARENT_OF]-(p)-[:CREATES]-(to:User)"+
+            "RETURN {from:from, OFFERS_ANSWER:a.CreationDate, to:to}",
             "parameters":{
                 "tag":"tableau"
             },
