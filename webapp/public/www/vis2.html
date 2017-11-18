@@ -146,6 +146,7 @@
     width: 220px;
   }
     </style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/sigma.min.js"></script>
@@ -156,6 +157,7 @@
 <script src='https://d3js.org/d3.v4.min.js' defer></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
 <script src='../js/vis2.js' defer></script>
+
 </head>
 
 <body>
@@ -204,23 +206,7 @@
                 // returns promise
                 return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
             }
-            let statements = [
-                {
-                    "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-                    "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
-                    "RETURN {from:from,rel:r,to:to}",
-                    "parameters": {
-                        "tag": "tableau"
-                    },
-                    "resultDataContents": ["row"],
-                },
-                {
-                    "statement": "MATCH (t:Tag {TagId: $tag}--(p:Posts" +
-                    "WITH p MATCH (from:User)-[r:LAST_EDITED]-(p)-[:CREATES]-(to:User)" +
-                    "RETURN {from:from, rel:r, to:to}"
-                }
-            ]
-            let vis = function (data) {
+let vis = function (data) {
                 let svg = d3.select("svg"),
                     width = +svg.attr("width"),
                     height = +svg.attr("height");
@@ -239,58 +225,53 @@
                     .enter().append("line")
                     .attr("stroke-width", function (d) { return Math.sqrt(d.value); });
 
-                let node = svg.append("g")
-                    .attr("class", "nodes")
-                    .selectAll("circle")
-                    .data(data.nodes)
-                    .enter().append("circle")
-                    .attr("r", 5)
-                    .attr("fill", function (d) { return color(d.group); })
-                    .call(d3.drag()
-                        .on("start", dragstarted)
-                        .on("drag", dragged)
-                        .on("end", dragended));
-
-                node.append("title")
-                    .text(function (d) { return d.id; });
-
-                simulation
-                    .nodes(data.nodes)
-                    .on("tick", ticked);
-
-                simulation.force("link")
-                    .links(data.links);
-
-                function ticked() {
-                    link
-                        .attr("x1", function (d) { return d.source.x; })
-                        .attr("y1", function (d) { return d.source.y; })
-                        .attr("x2", function (d) { return d.target.x; })
-                        .attr("y2", function (d) { return d.target.y; });
-
-                    node
-                        .attr("cx", function (d) { return d.x; })
-                        .attr("cy", function (d) { return d.y; });
-                }
-
-
-                function dragstarted(d) {
-                    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-                    d.fx = d.x;
-                    d.fy = d.y;
-                }
-
-                function dragged(d) {
-                    d.fx = d3.event.x;
-                    d.fy = d3.event.y;
-                }
-
                 function dragended(d) {
                     if (!d3.event.active) simulation.alphaTarget(0);
                     d.fx = null;
                     d.fy = null;
                 }
             }
+    let getStatementByTag = function(tag){
+        return [
+            {
+                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                "WITH p MATCH (from:User)-[r:Comment]->(p)<-[:CREATES]-(to:User) " +
+                "RETURN {from:from,rel:r,to:to}",
+                "parameters": {
+                    "tag":tag
+                },
+                "resultDataContents":["row"],
+            },
+            {
+                "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                "WITH p MATCH (from:User)-[r:LAST_EDITED]->(p)<-[:CREATES]-(to:User)" +
+                "RETURN {from:from, rel:r, to:to}",
+                "parameters":{
+                    "tag":tag
+                },
+                "resultDataContents":["row"]
+            },
+            {
+                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
+                "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)-[r:ANSWERS]->(p)-[:CREATES]-(to:User)"+
+                "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
+                "parameters":{
+                    "tag":tag
+                },
+                "resultDataContents":["row"]
+            },
+            {
+                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
+                "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)<-[r:PARENT_OF]-(p)-[:CREATES]-(to:User)"+
+                "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
+                "parameters":{
+                    "tag":tag
+                },
+                "resultDataContents":["row"]
+            }
+        ]
+    }
+
             let sigmavis = function (data) {
 
                 sigma.settings.nodesPowRatio = 0.5;
@@ -355,29 +336,46 @@
                     gravity: 20
                 });
                 s.startForceAtlas2()
+    }
+    let pipe = function(data) {
+        console.log(data)
+        let resultlists = data.results.map(o => o.data).reduce((a,v) => a.concat(v), [])
+        console.log(resultlists)
+        let linksmap = {}
+        for (let i =0; i < resultlists.length; i++){
+            let row = resultlists[i].row[0]
+            let key = row.from.UserId+'-'+row.to.UserId
+            if(linksmap.hasOwnProperty(key)){
 
+            }else {
+                linksmap[key] = {
 
-            }
-            let pipe = function (data) {
-                let resultlists = data.results.map(o => o.data).reduce((a, v, []) => a.concat(v[0]))
-                let links = resultlists.map(function (o) { return { "source": o.row[0].from.UserId, "target": o.row[0].to.UserId, "time": o.row[0].rel.CreationDate } })
-                let nodesmap = {}
-                for (let i = 0; i < resultlists.length; i++) {
-                    let row = resultlists[i].row[0]
-                    nodesmap[row.from.UserId] = row.from
-                    nodesmap[row.to.UserId] = row.to
-                }
-                let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
-                console.log(nodes)
-                return {
-                    "nodes": nodes,
-                    "links": links
                 }
             }
-            let promise = query(statements, [JSON.parse, pipe])
-            promise.then((data) => sigmavis(data.data))
-                .catch(e => console.log(e))
-        </script>
+        }
+        let links = resultlists.map(function(o){
+            return {"source": o.row[0].from.UserId,
+                "target": o.row[0].to.UserId,
+                "time": o.row[0].rel.CreationDate}
+        })
+
+        let nodesmap = {}
+        for(let i = 0; i < resultlists.length; i ++){
+            let row = resultlists[i].row[0]
+            nodesmap[row.from.UserId] = row.from
+            nodesmap[row.to.UserId] = row.to
+        }
+        let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
+        console.log(nodes)
+        return {
+            "nodes":nodes,
+            "links":links
+        }
+    }
+    let promise = query(getStatementByTag("tableau"),[JSON.parse,pipe])
+    promise.then((data) => sigmavis(data.data))
+        .catch(e => console.log(e))
+</script>
 </body>
 
 </html>
