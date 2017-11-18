@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style></style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
+</head>
+<body>
+<script>
+    let query = function(statements, transform){
+        var config = {
+            method:'post',
+            headers:{'Content-type':'application/json','Accept':'application/json; charset=utf-8', 'X-stream':true},
+            data: {
+                "statements":statements
+            }
+        }
+        if (typeof transform !== 'undefined') {
+            config.transformResponse = transform
+        }
+        // returns promise
+        return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
+    }
+    let q = d3.queue()
+    let statements = [{
+        "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+        "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
+        "RETURN * LIMIT 25 order by",
+        "parameters": {
+            "tag":"tableau"
+        },
+        "resultDataContents":["graph","row"],
+    }
+    ]
+    let vis = function(data){
+        let svg = d3.select('body')
+            .append('svg')
+            .attr('width', 1000)
+            .attr('height',500)
+        svg.selectAll('circle')
+            .data([2,4,6,8,10])
+            .enter()
+            .append('circle')
+            .attr('cy',d => d * 10)
+            .attr('cx',d => 10* d)
+            .attr('r', d=> d)
+            .attr('color', 'black')
+    }
+
+    var promise = query(statements,undefined)
+    promise.then((data) => vis(data.data))
+</script>
+</body>
+</html>
