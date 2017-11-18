@@ -49,7 +49,7 @@
     let statements = [
         {
             "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-            "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
+            "WITH p MATCH (from:User)-[r:Comment]->(p)<-[:CREATES]-(to:User) " +
             "RETURN {from:from,rel:r,to:to}",
             "parameters": {
                 "tag":"tableau"
@@ -57,9 +57,31 @@
             "resultDataContents":["row"],
         },
         {
-            "statement": "MATCH (t:Tag {TagId: $tag}--(p:Posts" +
-            "WITH p MATCH (from:User)-[r:LAST_EDITED]-(p)-[:CREATES]-(to:User)" +
-            "RETURN {from:from, rel:r, to:to}"
+            "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+            "WITH p MATCH (from:User)-[r:LAST_EDITED]->(p)<-[:CREATES]-(to:User)" +
+            "RETURN {from:from, rel:r, to:to}",
+            "parameters":{
+                "tag":"tableau"
+            },
+            "resultDataContents":["row"]
+        },
+        {
+            "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
+                "WITH p MATCH (from:User)-[:CREATES]-(:Posts)-[r:ANSWERS]->(p)-[:CREATES]-(to:User)"+
+                "RETURN {from:from, rel:r, to:to}",
+            "parameters":{
+                "tag":"tableau"
+            },
+            "resultDataContents":["row"]
+        },
+        {
+            "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
+            "WITH p MATCH (from:User)-[:CREATES]-(:Posts)<-[r:PARENT_OF]-(p)-[:CREATES]-(to:User)"+
+            "RETURN {from:from, rel:r, to:to}",
+            "parameters":{
+                "tag":"tableau"
+            },
+            "resultDataContents":["row"]
         }
     ]
     let vis = function(data){
@@ -201,7 +223,9 @@
 
     }
     let pipe = function(data) {
+        console.log(data)
         let resultlists = data.results.map(o => o.data).reduce((a,v,[]) => a.concat(v[0]))
+        console.log(resultlists)
         let links = resultlists.map(function(o){ return {"source": o.row[0].from.UserId, "target": o.row[0].to.UserId, "time":o.row[0].rel.CreationDate}})
         let nodesmap = {}
         for(let i = 0; i < resultlists.length; i ++){
