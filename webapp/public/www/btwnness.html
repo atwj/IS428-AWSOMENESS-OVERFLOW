@@ -22,7 +22,7 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
     <script src="jsnetworkx.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/sigma.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.forceAtlas2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.noverlap.min.js"></script>
@@ -62,77 +62,7 @@
             "RETURN {from:from, rel:r, to:to}"
         }
     ]
-//    let vis = function(data){
-//        let svg = d3.select("svg"),
-//            width = +svg.attr("width"),
-//            height = +svg.attr("height");
-//
-//        let color = d3.scaleOrdinal(d3.schemeCategory20);
-//
-//        let simulation = d3.forceSimulation()
-//            .force("link", d3.forceLink().id(function(d) { return d.UserId; }))
-//            .force("charge", d3.forceManyBody())
-//            .force("center", d3.forceCenter(width / 2, height / 2));
-//
-//        let link = svg.append("g")
-//            .attr("class", "links")
-//            .selectAll("line")
-//            .data(data.links)
-//            .enter().append("line")
-//            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
-//
-//        let node = svg.append("g")
-//            .attr("class", "nodes")
-//            .selectAll("circle")
-//            .data(data.nodes)
-//            .enter().append("circle")
-//            .attr("r", 5)
-//            .attr("fill", function(d) { return color(d.group); })
-//            .call(d3.drag()
-//                .on("start", dragstarted)
-//                .on("drag", dragged)
-//                .on("end", dragended));
-//
-//        node.append("title")
-//            .text(function(d) { return d.id; });
-//
-//        simulation
-//            .nodes(data.nodes)
-//            .on("tick", ticked);
-//
-//        simulation.force("link")
-//            .links(data.links);
-//
-//        function ticked() {
-//            link
-//                .attr("x1", function(d) { return d.source.x; })
-//                .attr("y1", function(d) { return d.source.y; })
-//                .attr("x2", function(d) { return d.target.x; })
-//                .attr("y2", function(d) { return d.target.y; });
-//
-//            node
-//                .attr("cx", function(d) { return d.x; })
-//                .attr("cy", function(d) { return d.y; });
-//        }
-//
-//
-//        function dragstarted(d) {
-//            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-//            d.fx = d.x;
-//            d.fy = d.y;
-//        }
-//
-//        function dragged(d) {
-//            d.fx = d3.event.x;
-//            d.fy = d3.event.y;
-//        }
-//
-//        function dragended(d) {
-//            if (!d3.event.active) simulation.alphaTarget(0);
-//            d.fx = null;
-//            d.fy = null;
-//        }
-//    }
+
     let sigmavis = function(data){
         console.log(data);
 
@@ -144,16 +74,16 @@
         console.log(G.nodes());
 
         data.links.forEach((d,i) => {
-            G.addEdge([d.source, d.target])
+            G.addEdge(d.source, d.target)
         });
+        console.log(G.edges());
 
-        let results = jsnx.genBetweennessCentrality(G);
+        let results = new jsnx.genBetweennessCentrality(G);
         console.log(results)
-        results.then(function(a){
-            console.log(a)
-        });
 
 
+        var colorSeq = d3.scaleSequential().domain([0,1]).interpolator(d3.interpolateRgb.gamma(3.0)("purple","orange"))
+        console.log(colorSeq(20))
         sigma.settings.nodesPowRatio = 0.5;
         sigma.settings.autoRescale = false;
 
@@ -162,7 +92,7 @@
                 container: document.getElementById('container'),
                 type: 'canvas',
                 settings: {
-                    defaultNodeColor: '#ec5148',
+//                    defaultNodeColor: '#ec5148',
                     edgeColor: 'default',
                     defaultEdgeColor: '#ccc',
                     animationsTime: 5000,
@@ -193,19 +123,40 @@
             })
         })
 
+        results.then(function(a){
+            let obj = a._stringValues
+            let minVal = Math.sqrt(Math.min.apply(null,Object.values(obj)))
+            let maxVal = Math.sqrt(Math.max.apply(null,Object.values(obj)))
+            var colorSeq = d3.scaleSequential()
+                .domain([minVal,maxVal])
+                .interpolator(d3.interpolateRgb.gamma(3.0)("red","blue"))
+            Object.keys(obj).forEach(function(k) {
+//                console.log(k, obj[k])
+                s.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
+                //s.graph.nodes(k).color = colorSeq(obj[k])
+            });
+            s.refresh();
+        });
+
+        //PAUSE ANIMATION
         isStop = false
         button = document.getElementById('stop')
         button.onclick = () => {
             if (isStop) {
                 s.startForceAtlas2()
+                isStop = false
             }else{
                 s.stopForceAtlas2()
                 isStop = true
             }
         }
+
+
+        //NODE SIZE BASED ON DEGREE
         nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
         binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
         s.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
+
         // Finally, let's ask our sigma instance to refresh:
         s.refresh();
         s.configForceAtlas2({
