@@ -54,6 +54,11 @@
                 "tag":"tableau"
             },
             "resultDataContents":["row"],
+        },
+        {
+            "statement": "MATCH (t:Tag {TagId: $tag}--(p:Posts" +
+            "WITH p MATCH (from:User)-[r:LAST_EDITED]-(p)-[:CREATES]-(to:User)" +
+            "RETURN {from:from, rel:r, to:to}"
         }
     ]
     let vis = function(data){
@@ -143,9 +148,8 @@
                     animationsTime: 5000,
                     drawLabels: false,
                     batchEdgesDrawing: true,
-                    hideEdgesOnMove: true,
+                    hideEdgesOnMove: false,
                     sideMargin: 1,
-
                 }
             },
         });
@@ -184,15 +188,14 @@
         // Finally, let's ask our sigma instance to refresh:
         s.refresh();
         s.configForceAtlas2({
-
             worker: true,
             autoStop: false,
             background: false,
             adjustSizes: true,
             gravity:20
         })
-        s.startForceAtlas2()
-      s
+//        s.startForceAtlas2()
+      
 
     }
     let pipe = function(data) {
