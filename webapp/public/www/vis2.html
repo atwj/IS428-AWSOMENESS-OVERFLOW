@@ -47,6 +47,16 @@
             border:none;
 
         }
+        #total-nodes{
+            margin-left: 10px;
+            font-size: 8pt;
+        }
+
+        #total-edges{
+            margin-left: 10px;
+            font-size: 8pt;
+        }
+
         #stop:hover{
             background-color: #f44336;
             color: white;
@@ -219,6 +229,15 @@
     width: 220px;
   }
 
+#vis-title {
+    display:inline-block; float:left;
+    z-index: 999999;
+    position: absolute;
+}
+#vis-title > h5 {
+    float: left;
+    margin-right: 5px;
+}
 
     </style>
 
@@ -226,8 +245,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/sigma.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.forceAtlas2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.noverlap.min.js"></script>
-
-
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+<script srr="https://cdnjs.cloudflare.com/ajax/libs/q.js/2.0.3/q.min.js"></script>
 
 <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>-->
 <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.js"></script>-->
@@ -262,16 +284,24 @@
         </div>
     </nav>
     <br/>
+    <div id="vis-title">
+        <h5>Network analysis of user-to-user interactions on posts tagged:</h5>
+        <fieldset>
+            <input type="text" id="search" name="search">
+            <input type="submit" id="submitsearch"/>
+        </fieldset>
+    </div>
     <div id="legend">
         <div class='title'><b>Legend</b></div>
-
     </div>
     <div id="container"></div>
     <div id="sidebar">
         <div id='charts'>
+            <div class='title'>Date</div>
+            <button id="stop">Stop animation</button>
+            <div id='total-nodes' class="stats"></div>
+            <div id='total-edges' class="stats"></div>
             <div id='date-chart' class='chart'>
-                <div class='title'>Date</div>
-                <button id="stop">Stop animation</button>
                 <!--<svg width="960" height="600"></svg>-->
 
             </div>
@@ -394,21 +424,21 @@
         sigma.settings.autoRescale = false;
 
         let s = new sigma({
-            renderer: {
-                container: document.getElementById('container'),
-                type: 'canvas',
-                settings: {
-                    defaultNodeColor: '#ec5148',
-                    edgeColor: 'default',
-                    defaultEdgeColor: '#ccc',
-                    animationsTime: 5000,
-                    //drawLabels: false,
-                    //batchEdgesDrawing: true,
-                    hideEdgesOnMove: true,
-                    sideMargin: 1,
-                    labelThreshold: 8,
-                }
-            },
+//            renderer: {
+//                container: document.getElementById('container'),
+//                type: 'canvas',
+//                settings: {
+//                    defaultNodeColor: '#ec5148',
+//                    edgeColor: 'default',
+//                    defaultEdgeColor: '#ccc',
+//                    animationsTime: 5000,
+//                    //drawLabels: false,
+//                    //batchEdgesDrawing: true,
+//                    hideEdgesOnMove: true,
+//                    sideMargin: 1,
+//                    labelThreshold: 8,
+//                }
+//            },
         });
 
         data.nodes.forEach((d, i, a) => {
@@ -732,31 +762,28 @@
             return chart;
         }
     }
+    sigma.classes.graph.addMethod('neighbors', function(nodeId) {
+        var k,
+            neighbors = {},
+            index = this.allNeighborsIndex[nodeId] || {};
+
+        for (k in index)
+            neighbors[k] = this.nodesIndex[k];
+        return neighbors;
+    });
+    let s = null
+    let s2 = null
     let anotherSigmaVis = function(data){
-        // When the stage is clicked, we just color each
-        // node and edge with its original color.
-        sigma.classes.graph.addMethod('neighbors', function(nodeId) {
-            var k,
-                neighbors = {},
-                index = this.allNeighborsIndex[nodeId] || {};
 
-            for (k in index)
-                neighbors[k] = this.nodesIndex[k];
-            return neighbors;
-        });
-        // Create cross filter on link edge
-        let edgeCrossFilter = crossfilter(data.links)
-
-        // Create nodes list using sigma, dummy graph for referencing nodes
-        let s = new sigma()
-        let s2 = new sigma({
+        s = new sigma()
+        s2 = new sigma({
             renderer: {
                 container: document.getElementById('container'),
                 type: 'canvas',
                 settings: {
                     nodesPowRatio: 0.5,
                     autoRescale: false,
-                    defaultNodeColor: '#ec5148',
+                    defaultNodeColor: '#ccc',
                     edgeColor: 'default',
                     defaultEdgeColor: '#ccc',
                     animationsTime: 5000,
@@ -768,6 +795,13 @@
                 }
             },
         });
+
+        // When the stage is clicked, we just color each
+        // node and edge with its original color.
+        // Create cross filter on link edge
+        let edgeCrossFilter = crossfilter(data.links)
+
+        // Create nodes list using sigma, dummy graph for referencing nodes
         s2.bind('clickStage', function(e) {
             console.log(e)
             s2.graph.nodes().forEach(function(n) {
@@ -781,7 +815,31 @@
             // Same as in the previous event:
             s2.refresh();
         });
-        let cam = s2.addCamera('cam1')
+        s2.bind('clickNode', function(e) {
+            console.log(e)
+            var nodeId = e.data.node.id,
+                toKeep = s2.graph.neighbors(nodeId);
+            toKeep[nodeId] = e.data.node;
+
+            s2.graph.nodes().forEach(function(n) {
+                if (toKeep[n.id])
+                    n.color = n.color
+                else
+                    n.color = '#eee';
+            });
+
+            s2.graph.edges().forEach(function(e) {
+                if (toKeep[e.source] && toKeep[e.target])
+                    e.color = e.originalColor;
+                else
+                    e.color = '#eee';
+            });
+            // Since the data has been modified, we need to
+            // call the refresh method to make the colors
+            // update effective.
+            s2.refresh();
+        });
+
         data.nodes.forEach((d, i, a) => {
             s.graph.addNode({
                 id: d.UserId,
@@ -802,33 +860,7 @@
         barVolumeChart(edgeByDate, new Date(2009,0), new Date(2017,9), render, s2)
 
         // Highlight nodes and edges on click.
-        s2.bind('clickNode', function(e) {
-            console.log(e)
-            var nodeId = e.data.node.id,
-                toKeep = s2.graph.neighbors(nodeId);
-                toKeep[nodeId] = e.data.node;
-
-            s2.graph.nodes().forEach(function(n) {
-                if (toKeep[n.id])
-                    n.color = n.color
-                else
-                    n.color = '#eee';
-            });
-
-            s2.graph.edges().forEach(function(e) {
-                if (toKeep[e.source] && toKeep[e.target])
-                    e.color = e.originalColor;
-                else
-                    e.color = '#eee';
-            });
-            // Since the data has been modified, we need to
-            // call the refresh method to make the colors
-            // update effective.
-            s2.refresh();
-        });
         function render(){
-            s2.graph.clear();
-
             // Get all edges within filtered date.
             let graphObjects = edgeByDate.top(Infinity)
             let filteredCF = crossfilter(edgeCrossFilter.allFiltered())
@@ -862,8 +894,6 @@
                     size: r.value * 10
                 })
             })
-            console.log(uniqueNodes)
-            console.log(pairList)
             //JSNETWORKX GRAPH
             var G = new jsnx.DiGraph();
             uniqueNodes.forEach((d, i, a) => {
@@ -872,8 +902,15 @@
             pairList.forEach((d,i) => {
                 G.addEdge(d.key[0], d.key[1])
             });
-            let results = new jsnx.genBetweennessCentrality(G);
 
+            let results = new jsnx.genBetweennessCentrality(G);
+            nodeArr = s2.graph.nodes().map(v => s2.graph.degree(v.id))
+            let topDegrees = s2.graph.nodes()
+                .sort((a, b) => s2.graph.degree(b.id) - s2.graph.degree(a.id))
+                .slice(0, 5);
+            console.log(topDegrees)
+            binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
+            s2.graph.nodes().forEach(v => v.size = binner(s2.graph.degree(v.id)))
             results.then(function(a){
                 let obj = a._stringValues
                 let minVal = Math.sqrt(Math.min.apply(null,Object.values(obj)))
@@ -886,7 +923,6 @@
                     s2.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
                 });
 
-                s2.refresh();
                 let topData = Object.keys(obj).sort(function(a, b){return obj[b]-obj[a]}).slice(0, 5);
 
                 var first = document.getElementById("first");
@@ -907,50 +943,44 @@
                 fourth.href = "https://stackoverflow.com/users/" + topData[3]
                 fifth.href = "https://stackoverflow.com/users/" + topData[4]
 
+                var dfirst = document.getElementById("dfirst");
+                var dsecond = document.getElementById("dsecond");
+                var dthird = document.getElementById("dthird");
+                var dfourth = document.getElementById("dfourth");
+                var dfifth = document.getElementById("dfifth");
+
+                dfirst.innerHTML = "1. " + topDegrees[0].label
+                dsecond.innerHTML = "2. " + topDegrees[1].label
+                dthird.innerHTML = "3. " + topDegrees[2].label
+                dfourth.innerHTML = "4. " + topDegrees[3].label
+                dfifth.innerHTML = "5. " + topDegrees[4].label
+
+                dfirst.href = "https://stackoverflow.com/users/" + topDegrees[0].id
+                dsecond.href = "https://stackoverflow.com/users/" + topDegrees[1].id
+                dthird.href = "https://stackoverflow.com/users/" + topDegrees[2].id
+                dfourth.href = "https://stackoverflow.com/users/" + topDegrees[3].id
+                dfifth.href = "https://stackoverflow.com/users/" + topDegrees[4].id
+
+                document.getElementById('total-nodes').innerHTML = "Total nodes: " +s2.graph.nodes().length
+                document.getElementById('total-edges').innerHTML = "Total edges: "+s2.graph.edges().length
+
             });
-            nodeArr = s2.graph.nodes().map(v => s2.graph.degree(v.id))
-            let topDegrees = s2.graph.nodes()
-                .sort((a, b) => s2.graph.degree(b.id) - s2.graph.degree(a.id))
-                .slice(0, 5);
-            console.log(topDegrees)
-            var dfirst = document.getElementById("dfirst");
-            var dsecond = document.getElementById("dsecond");
-            var dthird = document.getElementById("dthird");
-            var dfourth = document.getElementById("dfourth");
-            var dfifth = document.getElementById("dfifth");
-
-            dfirst.innerHTML = "1. " + topDegrees[0].label
-            dsecond.innerHTML = "2. " + topDegrees[1].label
-            dthird.innerHTML = "3. " + topDegrees[2].label
-            dfourth.innerHTML = "4. " + topDegrees[3].label
-            dfifth.innerHTML = "5. " + topDegrees[4].label
-
-            dfirst.href = "https://stackoverflow.com/users/" + topDegrees[0].id
-            dsecond.href = "https://stackoverflow.com/users/" + topDegrees[1].id
-            dthird.href = "https://stackoverflow.com/users/" + topDegrees[2].id
-            dfourth.href = "https://stackoverflow.com/users/" + topDegrees[3].id
-            dfifth.href = "https://stackoverflow.com/users/" + topDegrees[4].id
-
-
-            binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
-            s2.graph.nodes().forEach(v => v.size = binner(s2.graph.degree(v.id)))
-
             s2.refresh()
-
             if(s2.isForceAtlas2Running() == true){
                 s2.killForceAtlas2();
             }
             s2.configForceAtlas2({
-
-                            worker: true,
-//                            autoStop: 10,
-//                //            background: false,
-//                            adjustSizes: true,
+                worker: true,
+//              autoStop: 10,
+//              background: false,
+//              adjustSizes: true,
                 gravity: 20
             });
             s2.startForceAtlas2();
             setTimeout(()=> s2.stopForceAtlas2(),20000)
         }
+
+
     }
     let pipe = function(data) {
         let resultlists = data.results.map(o => o.data).reduce((a,v) => a.concat(v), [])
@@ -978,7 +1008,27 @@
     let promise = query(getStatementByTag("neo4j"),[JSON.parse,pipe])
     promise.then((data) => anotherSigmaVis(data.data))
         .catch(e => console.log(e))
+
+    $("#submitsearch").on('click', function (e) {
+        //ajax call here
+        let tag = document.getElementById('search').value
+        console.log(tag)
+        d3.selectAll('#date-chart').html("")
+        s.graph.clear()
+        s2.graph.clear()
+        s2.killForceAtlas2()
+        s.refresh()
+        s2.refresh()
+        let promise = query(getStatementByTag(tag),[JSON.parse,pipe])
+        promise.then((data) => anotherSigmaVis(data.data))
+            .catch(e => console.log(e))
+        //stop form submission
+        e.preventDefault();
+    });
 </script>
 </body>
+<script>
 
+
+</script>
 </html>
