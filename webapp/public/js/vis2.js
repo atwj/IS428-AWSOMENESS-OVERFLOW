@@ -38,27 +38,6 @@ d3.csv('../js/flights-3m.json', (error, flights) => {
 
   const charts = [
 
-    // barChart()
-    //   .dimension(hour)
-    //   .group(hours)
-    //   .x(d3.scaleLinear()
-    //     .domain([0, 24])
-    //     .rangeRound([0, 10 * 24])),
-
-    // barChart()
-    //   .dimension(delay)
-    //   .group(delays)
-    //   .x(d3.scaleLinear()
-    //       .domain([-60, 150])
-    //       .rangeRound([0, 10 * 21])),
-
-    // barChart()
-    //   .dimension(distance)
-    //   .group(distances)
-    //   .x(d3.scaleLinear()
-    //     .domain([0, 2000])
-    //     .rangeRound([0, 10 * 40])),
-
     barChart()
       .dimension(date)
       .group(dates)

@@ -27,7 +27,32 @@
             border-top: 2px solid orange;
         }
         #stop{
-            margin-left:0px;
+            margin-left:10px;
+            font-size: 8pt;
+            background: #f44556;
+            border:none; 
+           
+        }
+        #stop:hover{
+            background-color: #f44336;
+            color: white;
+        }
+        .reset{
+            margin-left:10px;
+            padding:0.5px 11px 1px 0.5px;
+            font-size: 9pt !important;
+            background-color:#008Cf4;
+            border:none; 
+            color:#000 !important;
+            text-decoration: none;
+        }
+        .reset:hover{
+            background-color: #008CBA;
+            color: white !important;
+            text-decoration: none;
+        }
+        .title{
+            float:left;
         }
         #sidebar {
                 position: fixed;
@@ -39,112 +64,126 @@
                 min-height: 10%;
                 min-width: 80%;
         }
-/*charts*/
-.chart {
-    display: inline-block;
-    height: 50px;
-    margin-bottom: 10px;
+        #legend {
+                position: fixed;
+                top: 0;
+                left:0;
+                margin-top:100px;
+                background: #FFF;
+                text-align: center;
+                padding-top:2px; 
+                padding-left: 1.2%;
+                border: solid 1px #ccc;
+                min-height: 10%;
+                min-width: 5%;
+                font-size: 7pt; 
+        }
+    /*charts*/
+    .chart {
+        display: inline-block;
+        height: 50px;
+        margin-bottom: 10px;
 
-  }
+    }
 
-  .reset {
-    padding-left: 1em;
-    font-size: smaller;
-    color: #ccc;
-  }
+    .reset {
+        padding-left: 1em;
+        font-size: smaller;
+        color: #ccc;
+    }
 
-  .background.bar {
-    fill: #ccc;
-    
-  }
+    .background.bar {
+        fill: #ccc;
+        
+    }
 
-  .foreground.bar {
-    fill: steelblue;
-  }
+    .foreground.bar {
+        fill: steelblue;
+    }
 
-  .brush-handle {
-    fill: #eee;
-    stroke: #666;
-  }
+    .brush-handle {
+        fill: #eee;
+        stroke: #666;
+    }
 
-  #hour-chart {
-    width: 260px;
-  }
+    #hour-chart {
+        width: 260px;
+    }
 
-  #delay-chart {
-    width: 230px;
-  }
+    #delay-chart {
+        width: 230px;
+    }
 
-  #distance-chart {
-    width: 430px;
-  }
+    #distance-chart {
+        width: 430px;
+    }
 
-  #date-chart {
-    width: 920px;
-  }
+    #date-chart {
+        width: 920px;
+    }
 
-  #flight-list {
-    min-height: 1024px;
-  }
+    #flight-list {
+        min-height: 1024px;
+    }
 
-  #flight-list .date,
-  #flight-list .day {
-    margin-bottom: .4em;
-  }
+    #flight-list .date,
+    #flight-list .day {
+        margin-bottom: .4em;
+    }
 
-  #flight-list .flight {
-    line-height: 1.5em;
-    background: #eee;
-    width: 925px;
-    margin-bottom: 1px;
-  }
+    #flight-list .flight {
+        line-height: 1.5em;
+        background: #eee;
+        width: 925px;
+        margin-bottom: 1px;
+    }
 
-  #flight-list .time {
-    color: #999;
-  }
+    #flight-list .time {
+        color: #999;
+    }
 
-  #flight-list .flight div {
-    display: inline-block;
-  }
+    #flight-list .flight div {
+        display: inline-block;
+    }
 
-  #flight-list div.time {
-    width: 100px;
-    text-align: left;
-  }
+    #flight-list div.time {
+        width: 100px;
+        text-align: left;
+    }
 
-  #flight-list div.origin {
-    width: 50px;
-    text-align: right;
-    padding-right: 15px;
-  }
+    #flight-list div.origin {
+        width: 50px;
+        text-align: right;
+        padding-right: 15px;
+    }
 
-  #flight-list div.destination {
-    width: 100px;
-    text-align: left;
-    padding-left: 15px;
-  }
+    #flight-list div.destination {
+        width: 100px;
+        text-align: left;
+        padding-left: 15px;
+    }
 
-  #flight-list div.distance {
-    width: 100px;
-    text-align: left;
-  }
+    #flight-list div.distance {
+        width: 100px;
+        text-align: left;
+    }
 
-  #flight-list div.delay {
-    width: 120px;
-    padding-right: 0px;
-    text-align: right;
-  }
+    #flight-list div.delay {
+        width: 120px;
+        padding-right: 0px;
+        text-align: right;
+    }
 
-  #flight-list .early {
-    color: green;
-  }
+    #flight-list .early {
+        color: green;
+    }
 
-  aside {
-    position: absolute;
-    left: 740px;
-    font-size: smaller;
-    width: 220px;
-  }
+    aside {
+        position: absolute;
+        left: 740px;
+        font-size: smaller;
+        width: 220px;
+    }
     </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
@@ -184,13 +223,15 @@
     <div id="sidebar">
         <div id='charts'>
             <div id='date-chart' class='chart'>
-                <div class='title'>Date</div>
+                <div class='title'><b>Date</b></div>
                 <button id="stop">Stop animation</button>
                 <!--<svg width="960" height="600"></svg>-->
-                
+
             </div>
         </div>
-
+     <div id="legend">
+        <div class='title'><b>Legend</b></div>
+        </div>    
         <script>
             let query = function (statements, transform) {
                 var config = {
@@ -206,7 +247,7 @@
                 // returns promise
                 return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
             }
-let vis = function (data) {
+            let vis = function (data) {
                 let svg = d3.select("svg"),
                     width = +svg.attr("width"),
                     height = +svg.attr("height");
@@ -231,46 +272,46 @@ let vis = function (data) {
                     d.fy = null;
                 }
             }
-    let getStatementByTag = function(tag){
-        return [
-            {
-                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-                "WITH p MATCH (from:User)-[r:Comment]->(p)<-[:CREATES]-(to:User) " +
-                "RETURN {from:from,rel:r,to:to}",
-                "parameters": {
-                    "tag":tag
-                },
-                "resultDataContents":["row"],
-            },
-            {
-                "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-                "WITH p MATCH (from:User)-[r:LAST_EDITED]->(p)<-[:CREATES]-(to:User)" +
-                "RETURN {from:from, rel:r, to:to}",
-                "parameters":{
-                    "tag":tag
-                },
-                "resultDataContents":["row"]
-            },
-            {
-                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
-                "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)-[r:ANSWERS]->(p)-[:CREATES]-(to:User)"+
-                "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
-                "parameters":{
-                    "tag":tag
-                },
-                "resultDataContents":["row"]
-            },
-            {
-                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
-                "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)<-[r:PARENT_OF]-(p)-[:CREATES]-(to:User)"+
-                "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
-                "parameters":{
-                    "tag":tag
-                },
-                "resultDataContents":["row"]
+            let getStatementByTag = function (tag) {
+                return [
+                    {
+                        "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                        "WITH p MATCH (from:User)-[r:Comment]->(p)<-[:CREATES]-(to:User) " +
+                        "RETURN {from:from,rel:r,to:to}",
+                        "parameters": {
+                            "tag": tag
+                        },
+                        "resultDataContents": ["row"],
+                    },
+                    {
+                        "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                        "WITH p MATCH (from:User)-[r:LAST_EDITED]->(p)<-[:CREATES]-(to:User)" +
+                        "RETURN {from:from, rel:r, to:to}",
+                        "parameters": {
+                            "tag": tag
+                        },
+                        "resultDataContents": ["row"]
+                    },
+                    {
+                        "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                        "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)-[r:ANSWERS]->(p)-[:CREATES]-(to:User)" +
+                        "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
+                        "parameters": {
+                            "tag": tag
+                        },
+                        "resultDataContents": ["row"]
+                    },
+                    {
+                        "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                        "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)<-[r:PARENT_OF]-(p)-[:CREATES]-(to:User)" +
+                        "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
+                        "parameters": {
+                            "tag": tag
+                        },
+                        "resultDataContents": ["row"]
+                    }
+                ]
             }
-        ]
-    }
 
             let sigmavis = function (data) {
 
@@ -336,46 +377,48 @@ let vis = function (data) {
                     gravity: 20
                 });
                 s.startForceAtlas2()
-    }
-    let pipe = function(data) {
-        console.log(data)
-        let resultlists = data.results.map(o => o.data).reduce((a,v) => a.concat(v), [])
-        console.log(resultlists)
-        let linksmap = {}
-        for (let i =0; i < resultlists.length; i++){
-            let row = resultlists[i].row[0]
-            let key = row.from.UserId+'-'+row.to.UserId
-            if(linksmap.hasOwnProperty(key)){
+            }
+            let pipe = function (data) {
+                console.log(data)
+                let resultlists = data.results.map(o => o.data).reduce((a, v) => a.concat(v), [])
+                console.log(resultlists)
+                let linksmap = {}
+                for (let i = 0; i < resultlists.length; i++) {
+                    let row = resultlists[i].row[0]
+                    let key = row.from.UserId + '-' + row.to.UserId
+                    if (linksmap.hasOwnProperty(key)) {
 
-            }else {
-                linksmap[key] = {
+                    } else {
+                        linksmap[key] = {
 
+                        }
+                    }
+                }
+                let links = resultlists.map(function (o) {
+                    return {
+                        "source": o.row[0].from.UserId,
+                        "target": o.row[0].to.UserId,
+                        "time": o.row[0].rel.CreationDate
+                    }
+                })
+
+                let nodesmap = {}
+                for (let i = 0; i < resultlists.length; i++) {
+                    let row = resultlists[i].row[0]
+                    nodesmap[row.from.UserId] = row.from
+                    nodesmap[row.to.UserId] = row.to
+                }
+                let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
+                console.log(nodes)
+                return {
+                    "nodes": nodes,
+                    "links": links
                 }
             }
-        }
-        let links = resultlists.map(function(o){
-            return {"source": o.row[0].from.UserId,
-                "target": o.row[0].to.UserId,
-                "time": o.row[0].rel.CreationDate}
-        })
-
-        let nodesmap = {}
-        for(let i = 0; i < resultlists.length; i ++){
-            let row = resultlists[i].row[0]
-            nodesmap[row.from.UserId] = row.from
-            nodesmap[row.to.UserId] = row.to
-        }
-        let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
-        console.log(nodes)
-        return {
-            "nodes":nodes,
-            "links":links
-        }
-    }
-    let promise = query(getStatementByTag("tableau"),[JSON.parse,pipe])
-    promise.then((data) => sigmavis(data.data))
-        .catch(e => console.log(e))
-</script>
+            let promise = query(getStatementByTag("tableau"), [JSON.parse, pipe])
+            promise.then((data) => sigmavis(data.data))
+                .catch(e => console.log(e))
+        </script>
 </body>
 
 </html>
