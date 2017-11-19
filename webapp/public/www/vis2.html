@@ -21,8 +21,6 @@
             min-width: 5%;
             font-size: 1rem;
         }
-
-
         .links line {
             stroke: #999;
             stroke-opacity: 0.6;
@@ -937,25 +935,8 @@
             binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
             s2.graph.nodes().forEach(v => v.size = binner(s2.graph.degree(v.id)))
 
-//            d3.select('#right-side-bar')
-//                .append('div')
-//                .append('ol')
-//                .selectAll('li')
-//                .data(topDegrees)
-//                .enter()
-//                .append('li')
-//                .text(d=> s2.graph.nodes(d).label)
-
-
-//            console.log(pairList.length)
-//            console.log(graphObjects.length)
             s2.refresh()
-//            cam.goTo({
-//                x:250,
-//                y:500,
-//                ratio:1000,
-//                angle:45
-//            })
+
             if(s2.isForceAtlas2Running() == true){
                 s2.killForceAtlas2();
             }
