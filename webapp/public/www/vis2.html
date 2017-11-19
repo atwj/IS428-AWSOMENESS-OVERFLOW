@@ -7,6 +7,21 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
         crossorigin="anonymous">
     <style>
+        #right-side-bar{
+            position: fixed;
+            top: 0;
+            right:0;
+            margin-top:65px;
+            margin-right:10px;
+            background: #FFF;
+            text-align: center;
+            padding-top:2px;
+            padding-left: 1.2%;
+
+            min-height: 10%;
+            min-width: 5%;
+            font-size: 1rem;
+        }
         .links line {
             stroke: #999;
             stroke-opacity: 0.6;
@@ -30,8 +45,8 @@
             margin-left:10px;
             font-size: 8pt;
             background: #f44556;
-            border:none; 
-           
+            border:none;
+
         }
         #stop:hover{
             background-color: #f44336;
@@ -42,7 +57,7 @@
             padding:0.5px 11px 1px 0.5px;
             font-size: 9pt !important;
             background-color:#008Cf4;
-            border:none; 
+            border:none;
             color:#000 !important;
             text-decoration: none;
         }
@@ -98,7 +113,6 @@
         display: inline-block;
         height: 50px;
         margin-bottom: 10px;
-
     }
 
     .reset {
@@ -220,7 +234,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reductio/0.6.3/reductio.min.js"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.9/dc.min.js"></script>-->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
-
+<script src="jsnetworkx.js"></script>
 <!--<script src='../js/vis2.js' defer></script>-->
 
 </head>
@@ -249,12 +263,13 @@
     <div id="sidebar">
         <div id='charts'>
             <div id='date-chart' class='chart'>
-                <div class='title'><b>Date</b></div>
+                <div class='title'>Date</div>
                 <button id="stop">Stop animation</button>
                 <!--<svg width="960" height="600"></svg>-->
 
             </div>
         </div>
+
     </div>
     <div id="legend">
         <div class='title'><b>Legend</b></div>
@@ -277,6 +292,7 @@
                 headers: { 'Content-type': 'application/json', 'Accept': 'application/json; charset=utf-8', 'X-stream': true },
                 data: {
                     "statements": statements
+
                 }
             }
             if (typeof transform !== 'undefined') {
@@ -359,6 +375,7 @@
                 G.addNode(d.UserId)
             });
 
+
             data.links.forEach((d, i) => {
                 G.addEdge(d.source, d.target)
             });
@@ -432,6 +449,7 @@
                 }
             }
 
+
             //NODE SIZE BASED ON DEGREE
             nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
             binner = d3.scaleQuantize().domain([Math.min.apply(null, nodeArr), Math.max.apply(null, nodeArr)]).range([2, 4, 8, 16, 32])
@@ -447,7 +465,6 @@
                 gravity: 20
             });
             s.startForceAtlas2()
-
 
         }
 
@@ -560,11 +577,11 @@
                             const filterVal = brushDirty;
                             brushDirty = false;
 
+
                             div.select('.title a').style('display', d3.brushSelection(div) ? null : 'none');
 
                             if (!filterVal) {
                                 g.call(brush);
-
                                 g.selectAll(`#clip-${id} rect`)
                                     .attr('x', 0)
                                     .attr('width', width);
@@ -647,6 +664,7 @@
 
                     // filter the active dimension to the range extents
                     dimension.filterRange(extents);
+
 
                     // re-render the other charts accordingly
                     renderAll();
@@ -784,6 +802,7 @@
                     size: 1
                 })
             })
+
 
             // Create dimmension by time.
             let edgeByDate = edgeCrossFilter.dimension(function (d) {
