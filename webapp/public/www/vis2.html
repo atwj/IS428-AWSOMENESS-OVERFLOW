@@ -817,17 +817,17 @@
 
                     s2.refresh();
                 let topData = Object.keys(obj).sort(function(a, b){return obj[b]-obj[a]}).slice(0, 5);
-                d3.select('.list-group1')
-                    .text('Betweenness Ranking')
-                    .append('ol')
-                    .selectAll('ol')
-                    .data(topData)
-                    .enter()
-                    .append('li')
-                    .attr('class','list-group-item list-group-item-action')
-                    .text(d => s.graph.nodes(d).label)
-                    .append('a')
-                    .attr('href','')
+//                d3.select('.list-group1')
+//                    .text('Betweenness Ranking')
+//                    .append('ol')
+//                    .selectAll('ol')
+//                    .data(topData)
+//                    .enter()
+//                    .append('li')
+//                    .attr('class','list-group-item list-group-item-action')
+//                    .text(d => s.graph.nodes(d).label)
+//                    .append('a')
+//                    .attr('href','')
             });
             console.log(s2.graph.nodes())
             nodeArr = s2.graph.nodes().map(v => s2.graph.degree(v.id))
@@ -838,25 +838,25 @@
             binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
             s2.graph.nodes().forEach(v => v.size = binner(s2.graph.degree(v.id)))
 
-            d3.select('#right-side-bar')
-                .append('div')
-                .append('ol')
-                .selectAll('li')
-                .data(topDegrees)
-                .enter()
-                .append('li')
-                .text(d=> s2.graph.nodes(d).label)
+//            d3.select('#right-side-bar')
+//                .append('div')
+//                .append('ol')
+//                .selectAll('li')
+//                .data(topDegrees)
+//                .enter()
+//                .append('li')
+//                .text(d=> s2.graph.nodes(d).label)
 
 
 //            console.log(pairList.length)
 //            console.log(graphObjects.length)
             s2.refresh()
-            cam.goTo({
-                x:250,
-                y:500,
-                ratio:1000,
-                angle:45
-            })
+//            cam.goTo({
+//                x:250,
+//                y:500,
+//                ratio:1000,
+//                angle:45
+//            })
             if(s2.isForceAtlas2Running() == true){
                 s2.killForceAtlas2();
             }
