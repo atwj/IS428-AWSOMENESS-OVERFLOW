@@ -144,6 +144,11 @@
     font-size: smaller;
     width: 220px;
   }
+
+#right-side-bar {
+    position: absolute;
+    right:20px;
+}
     </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
@@ -162,7 +167,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reductio/0.6.3/reductio.min.js"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.9/dc.min.js"></script>-->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
-
+<script src="jsnetworkx.js"></script>
 <!--<script src='../js/vis2.js' defer></script>-->
 
 </head>
@@ -196,6 +201,7 @@
 
             </div>
         </div>
+        <div id="right-side-bar"></div>
     </div>
     <script>
     let query = function (statements, transform) {
@@ -338,10 +344,10 @@
                 .interpolator(d3.interpolateRgb.gamma(3.0)("red","blue"))
             Object.keys(obj).forEach(function(k) {
 //                console.log(k, obj[k])
-                s.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
+                s2.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
                 //s.graph.nodes(k).color = colorSeq(obj[k])
             });
-            s.refresh();
+            s2.refresh();
         });
 
         //PAUSE ANIMATION
@@ -360,10 +366,10 @@
         //NODE SIZE BASED ON DEGREE
         nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
         binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
-        s.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
+        s2.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
         // Finally, let's ask our sigma instance to refresh:
-        s.refresh();
-        s.configForceAtlas2({
+        s2.refresh();
+        s2.configForceAtlas2({
 
 //            worker: true,
 //            autoStop: false,
@@ -377,6 +383,7 @@
     }
 
     let barVolumeChart = function(dim, start, end, renderGraph, graph){
+
         let dates = dim.group(d3.timeDay)
         const formatNumber = d3.format(',d');
         const charts = [
@@ -387,7 +394,7 @@
                 .x(d3.scaleTime()
                     .domain([start, end])
                     .rangeRound([0, 10 * 90]))
-                .filter([start, end])
+                .filter([new Date(2016,0), new Date(2017,0)])
         ]
         const chart = d3.selectAll('.chart')
             .data(charts);
@@ -422,7 +429,6 @@
             function chart(div) {
                 const width = x.range()[1];
                 const height = y.range()[0];
-
                 brush.extent([[0, 0], [width, height]]);
 
                 y.domain([0, group.top(1)[0].value]);
@@ -593,6 +599,7 @@
             chart.x = function (_) {
                 if (!arguments.length) return x;
                 x = _;
+
                 axis.scale(x);
                 return chart;
             };
@@ -685,8 +692,10 @@
         let s2 = new sigma({
             renderer: {
                 container: document.getElementById('container'),
-                type: 'webgl',
+                type: 'canvas',
                 settings: {
+                    nodesPowRatio: 0.5,
+                    autoRescale: false,
                     defaultNodeColor: '#ec5148',
                     edgeColor: 'default',
                     defaultEdgeColor: '#ccc',
@@ -695,10 +704,11 @@
                     //batchEdgesDrawing: true,
                     hideEdgesOnMove: true,
                     sideMargin: 1,
-                    labelThreshold: 8,
+                    labelThreshold: 8
                 }
             },
         });
+        let cam = s2.addCamera('cam1')
         data.nodes.forEach((d, i, a) => {
             s.graph.addNode({
                 id: d.UserId,
@@ -716,42 +726,38 @@
             return t
         })
         edgeByDate.filter([new Date(2016,0), new Date(2017,0)])
-        barVolumeChart(edgeByDate, new Date(2016,0), new Date(2017,0), render, s2)
-//        render()
+        barVolumeChart(edgeByDate, new Date(2009,0), new Date(2017,9), render, s2)
 
-        // Create button click command
-        //let button = document.getElementById('search')
-//        button.onclick = () => {
-//            console.log('clicked')
-//            let startDate = document.getElementById('start-date').value
-//            let endDate = document.getElementById('end-date').value
-//            edgeByDate.filter(null)
-//            edgeByDate.filter([new Date(startDate), new Date(endDate)])
-//            barVolumeChart(edgeByDate, new Date(startDate), new Date(endDate))
-//            render()
-//        }
         function render(){
-            s2.graph.computePhysics();
             s2.graph.clear();
+
+            // Get all edges within filtered date.
             let graphObjects = edgeByDate.top(Infinity)
             let filteredCF = crossfilter(edgeCrossFilter.allFiltered())
             let pairDim = filteredCF.dimension(d=> [d.source,d.target])
-            let pairList = pairDim.group().reduceCount().all()
+            //get people with top 10 highest degrees
+            let pairList = pairDim.group().reduceCount().top(Infinity)
+            let nodesInTopN = pairList.reduce((a,v)=>{
+                a[v.key[0]] = 0
+                a[v.key[1]] = 0
+                return a
+            },{})
             let sourceList = graphObjects.map(v => v.source).filter((v,i,arr) => i==arr.indexOf(v))
             let targetList = graphObjects.map(v => v.target).filter((v,i,arr) => i==arr.indexOf(v))
             let allList = sourceList.concat(targetList)
             let uniqueNodes = allList.filter((v,i,arr) => i==arr.indexOf(v))
+                .filter(o => o in nodesInTopN)
+//            console.log(nodesInTopN)
+//            console.log(uniqueNodes)
+//            console.log(pairList)
             uniqueNodes.forEach(r => s2.graph.addNode({
                 id: r,
                 label: s.graph.nodes(r).label,
                 x: Math.random() * 1000,
                 y:Math.random() * 1000,
-                dX: 0,
-                dY: 0,
                 size: 1
             }))
-//            console.log(pairList.length)
-//            console.log(graphObjects.length)
+
             pairList.forEach((r,i) => {
                 s2.graph.addEdge({
                     id: i,
@@ -760,7 +766,84 @@
                     size: r.value * 10
                 })
             })
+            console.log(uniqueNodes)
+            console.log(pairList)
+            //JSNETWORKX GRAPH
+            var G = new jsnx.DiGraph();
+            uniqueNodes.forEach((d, i, a) => {
+                G.addNode(d)
+            });
+            pairList.forEach((d,i) => {
+                G.addEdge(d.key[0], d.key[1])
+            });
+            let results = new jsnx.genBetweennessCentrality(G);
+
+            results.then(function(a){
+                let obj = a._stringValues
+                let minVal = Math.sqrt(Math.min.apply(null,Object.values(obj)))
+                let maxVal = Math.sqrt(Math.max.apply(null,Object.values(obj)))
+                let colorSeq = d3.scaleSequential()
+                    .domain([minVal,maxVal])
+                    .interpolator(d3.interpolateRgb.gamma(3.0)("grey","orange"))
+                Object.keys(obj).forEach(function(k) {
+//                console.log(k, obj[k])
+                    s2.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
+                });
+
+                //s.graph.nodes(k).color = colorSeq(obj[k])
+
+                    s2.refresh();
+                let topData = Object.keys(obj).sort(function(a, b){return obj[b]-obj[a]}).slice(0, 10);
+                d3.select('#right-side-bar')
+                    .append('div')
+                    .append('ol')
+                    .selectAll('li')
+                    .data(topData)
+                    .enter()
+                    .append('li')
+                    .text(d=> s.graph.nodes(d).label)
+            });
+            console.log(s2.graph.nodes())
+            nodeArr = s2.graph.nodes().map(v => s2.graph.degree(v.id))
+            let topDegrees = s2.graph.nodes()
+                .sort((a, b) => s2.graph.degree(b.id) - s2.graph.degree(a.id))
+                .slice(0, 10);
+            console.log(topDegrees)
+            binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
+            s2.graph.nodes().forEach(v => v.size = binner(s2.graph.degree(v.id)))
+
+            d3.select('#right-side-bar')
+                .append('div')
+                .append('ol')
+                .selectAll('li')
+                .data(topDegrees)
+                .enter()
+                .append('li')
+                .text(d=> s2.graph.nodes(d).label)
+
+
+//            console.log(pairList.length)
+//            console.log(graphObjects.length)
             s2.refresh()
+            cam.goTo({
+                x:250,
+                y:500,
+                ratio:1000,
+                angle:45
+            })
+            if(s2.isForceAtlas2Running() == true){
+                s2.killForceAtlas2();
+            }
+            s2.configForceAtlas2({
+
+                            worker: true,
+//                            autoStop: 10,
+//                //            background: false,
+//                            adjustSizes: true,
+                gravity: 20
+            });
+            s2.startForceAtlas2();
+            setTimeout(()=> s2.stopForceAtlas2(),20000)
         }
     }
     let pipe = function(data) {
