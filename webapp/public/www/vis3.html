@@ -1,20 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <style></style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
-</head>
+<meta charset="utf-8">
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .horizon {
+        border-top: solid 1px #000;
+        border-bottom: solid 1px #000;
+        overflow: hidden;
+        position: relative;
+        
+    }
+
+    .horizon + .horizon {
+        border-top: none;
+    }
+
+    .horizon canvas {
+        display: block;
+        image-rendering: pixelated;
+    }
+
+  .horizon .title,
+  .horizon .value {
+      bottom: 0;
+      line-height: 30px;
+      margin: 0 6px;
+      position: absolute;
+      font-family: sans-serif;
+      text-shadow: 0 1px 0 rgba(255,255,255,.5);
+      white-space: nowrap;
+  }
+
+  .horizon .title {
+      left: 0;
+  }
+
+  .horizon .value {
+      right: 0;
+  }
+
+</style>
+
 <body>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://npmcdn.com/d3-horizon-chart/build/d3-horizon-chart.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/crossfilter2/1.4.3/crossfilter.min.js' defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
 <script>
-    let query = function(statements, transform){
+
+    function loadStockData(stock, callback) {
+        // d3.csv('https://bost.ocks.org/mike/cubism/intro/stocks/' + stock + '.csv', function(rows) {
+        d3.csv('data/overtime.csv', function(rows) {
+                rows = rows.map(function(d) {
+                return [d3.timeParse(d.date), +d.price];
+            }).filter(function(d) {
+                return d[1];
+            }).reverse();
+            
+            var date = rows[0][0],
+                compare = rows[102][1],
+                value = rows[0][1],
+                values = [];
+              
+            rows.forEach(function(d, i ) {
+                values.push(value = (d[1] - compare) / compare);
+            });
+            
+            callback(null, {
+                'stock': stock,
+                'values': values
+            });
+        });
+    }
+    var q = d3.queue();
+
+    ['python','neo4j','d3.js'].forEach(function(stock) {
+        q.defer(loadStockData, stock);
+    });
+
+    q.awaitAll(function(error, stocks) {
+        if (error) throw error;
+
+        d3.select('body').selectAll('.horizon')
+            .data(stocks)
+            .enter()
+            .append('div')
+            .attr('class', 'horizon')
+            .each(function(d) {
+                d3.horizonChart()
+                    .title(d.stock)
+                    .call(this, d.values);
+            });
+    });
+
+    let statement = [{
+        "statement":"match (p:Posts)-[:HAS_TAG]-(t:Tag) with p.CreationDate as CreationDate, Count(p) as QnsCount return CreationDate, QnsCount order by CreationDate",
+        "resultDataContents":["row"]
+    }]
+    let query = function (statements, transform) {
         var config = {
-            method:'post',
-            headers:{'Content-type':'application/json','Accept':'application/json; charset=utf-8', 'X-stream':true},
+            method: 'post',
+            headers: { 'Content-type': 'application/json', 'Accept': 'application/json; charset=utf-8', 'X-stream': true },
             data: {
-                "statements":statements
+                "statements": statements
             }
         }
         if (typeof transform !== 'undefined') {
@@ -23,34 +115,9 @@
         // returns promise
         return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
     }
-    let q = d3.queue()
-    let statements = [{
-        "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-        "WITH p MATCH (from:User)-[r:Comment]-(p)-[:CREATES]-(to:User) " +
-        "RETURN * LIMIT 25 order by",
-        "parameters": {
-            "tag":"tableau"
-        },
-        "resultDataContents":["graph","row"],
-    }
-    ]
-    let vis = function(data){
-        let svg = d3.select('body')
-            .append('svg')
-            .attr('width', 1000)
-            .attr('height',500)
-        svg.selectAll('circle')
-            .data([2,4,6,8,10])
-            .enter()
-            .append('circle')
-            .attr('cy',d => d * 10)
-            .attr('cx',d => 10* d)
-            .attr('r', d=> d)
-            .attr('color', 'black')
-    }
 
-    var promise = query(statements,undefined)
-    promise.then((data) => vis(data.data))
+    let promise = query(statement)
+    promise.then(d => console.log(d))
+        .catch(e => console.log(e))
+
 </script>
-</body>
-</html>
