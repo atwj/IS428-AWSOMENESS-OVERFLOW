@@ -152,7 +152,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.forceAtlas2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.noverlap.min.js"></script>
 
-<script src='https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js' defer></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/crossfilter2/1.4.3/crossfilter.min.js' defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reductio/0.6.3/reductio.min.js"></script>
 <script src='https://d3js.org/d3.v4.min.js' defer></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
 <script src='../js/vis2.js' defer></script>
@@ -162,8 +163,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01"
             aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+        <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
             <a class="navbar-brand" href="#"><img src="..\image\logo.png" height="30" width="100"></a>
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -178,6 +179,12 @@
         </div>
     </nav>
     <br/>
+    <div>
+        <input id="start-date" type="date">
+        <input id="end-date" type="date">
+        <button id="search">Go</button>
+    </div>
+
     <div id="container"></div>
     <div id="sidebar">
         <div id='charts'>
@@ -189,8 +196,8 @@
             </div>
         </div>
     </div>
-        <script>
-            let query = function (statements, transform) {
+    <script>
+    let query = function (statements, transform) {
                 var config = {
                     method: 'post',
                     headers: { 'Content-type': 'application/json', 'Accept': 'application/json; charset=utf-8', 'X-stream': true },
@@ -204,7 +211,7 @@
                 // returns promise
                 return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
             }
-let vis = function (data) {
+    let vis = function (data) {
                 let svg = d3.select("svg"),
                     width = +svg.attr("width"),
                     height = +svg.attr("height");
@@ -367,16 +374,101 @@ let vis = function (data) {
 
 
     }
-    let pipe = function(data) {
+    let anotherSigmaVis = function(data){
         console.log(data)
+        // Create cross filter on link edge
+        let edgeCrossFilter = crossfilter(data.links)
+
+        // Create nodes list using sigma, dummy graph for referencing nodes
+        let s = new sigma()
+        let s2 = new sigma({
+            renderer: {
+                container: document.getElementById('container'),
+                type: 'canvas',
+                settings: {
+                    defaultNodeColor: '#ec5148',
+                    edgeColor: 'default',
+                    defaultEdgeColor: '#ccc',
+                    animationsTime: 5000,
+                    //drawLabels: false,
+                    //batchEdgesDrawing: true,
+                    hideEdgesOnMove: true,
+                    sideMargin: 1,
+                    labelThreshold: 8,
+                }
+            },
+        });
+
+        data.nodes.forEach((d, i, a) => {
+            s.graph.addNode({
+                id: d.UserId,
+                label: d.DisplayName,
+                x: Math.random() * 1000,
+                y:Math.random() * 1000,
+                size: 1
+            })
+        })
+
+        // Create dimmension by time.
+        let edgeByDate = edgeCrossFilter.dimension(function(d){
+            var t = new Date(1970,0)
+            t.setSeconds(d.time)
+            return t
+        })
+//        let edgeByPairs = edgeCrossFilter.dimension(d => d.key)
+        // clear filter
+        edgeByDate.filter(null).top(Infinity)
+
+        // Create button click command
+        let button = document.getElementById('search')
+        button.onclick = () => {
+            console.log('clicked')
+            let startDate = document.getElementById('start-date').value
+            let endDate = document.getElementById('end-date').value
+            edgeByDate.filter(null)
+            edgeByDate.filter([new Date(startDate), new Date(endDate)])
+            render()
+        }
+
+        function render(){
+            s2.graph.clear();
+            let graphObjects = edgeByDate.top(Infinity)
+            let filteredCF = crossfilter(edgeCrossFilter.allFiltered())
+            let pairDim = filteredCF.dimension(d=> [d.source,d.target])
+            let pairList = pairDim.group().reduceCount().all()
+            let sourceList = graphObjects.map(v => v.source).filter((v,i,arr) => i==arr.indexOf(v))
+            let targetList = graphObjects.map(v => v.target).filter((v,i,arr) => i==arr.indexOf(v))
+            let allList = sourceList.concat(targetList)
+            let uniqueNodes = allList.filter((v,i,arr) => i==arr.indexOf(v))
+            uniqueNodes.forEach(r => s2.graph.addNode({
+                id: r,
+                label: s.graph.nodes(r).label,
+                x: Math.random() * 1000,
+                y:Math.random() * 1000,
+                size: 1
+            }))
+            console.log(pairList.length)
+            console.log(graphObjects.length)
+            pairList.forEach((r,i) => {
+                s2.graph.addEdge({
+                    id: i,
+                    source: r.key[0],
+                    target: r.key[1],
+                    size: r.value * 10
+                })
+            })
+            s2.refresh()
+        }
+    }
+    let pipe = function(data) {
         let resultlists = data.results.map(o => o.data).reduce((a,v) => a.concat(v), [])
-        console.log(resultlists)
-        let linksmap = {}
-        
-        let links = resultlists.map(function(o){
-            return {"source": o.row[0].from.UserId,
+        let links = resultlists.filter(o => typeof(o.row[0].rel.CreationDate)!== 'undefined').map(function(o){
+            return {
+                "source": o.row[0].from.UserId,
                 "target": o.row[0].to.UserId,
-                "time": o.row[0].rel.CreationDate}
+                "time": o.row[0].rel.CreationDate,
+                "key": o.row[0].from.UserId+':'+o.row[0].to.UserId
+            }
         })
 
         let nodesmap = {}
@@ -386,14 +478,13 @@ let vis = function (data) {
             nodesmap[row.to.UserId] = row.to
         }
         let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
-        console.log(nodes)
         return {
             "nodes":nodes,
             "links":links
         }
     }
-    let promise = query(getStatementByTag("tableau"),[JSON.parse,pipe])
-    promise.then((data) => sigmavis(data.data))
+    let promise = query(getStatementByTag("neo4j"),[JSON.parse,pipe])
+    promise.then((data) => anotherSigmaVis(data.data))
         .catch(e => console.log(e))
 </script>
 </body>
