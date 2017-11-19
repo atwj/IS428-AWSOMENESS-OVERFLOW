@@ -9,7 +9,10 @@
 
     <style type="text/css">
 svg {
-  margin: 55px 0px;  
+
+}
+#graph{
+    margin: 0px 0px;
 }
 body {
   font: 10px sans-serif;
@@ -41,7 +44,7 @@ line.link {
     margin: 10px 10px;
     border: 1px solid #6895b4;
     min-height: 3px;
-    min-width: 8px;
+    min-width: 10px;
 }
 .item-group {
     margin-bottom: 5px;
@@ -92,10 +95,10 @@ line.link {
     <a class="navbar-brand" href="#"><img src="..\image\logo.png" height="30" width="100"></a>
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       <li class="nav-item active">
-        <a class="nav-link" href="index.html">Cluster of Tags <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="vis1">Cluster of Tags <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="vis2.html">Link</a>
+        <a class="nav-link" href="vis2">Link</a>
       </li>
     </ul>
     
@@ -282,6 +285,7 @@ line.link {
             .attr("width", "100%")
             .attr("height", "100%")
             .attr("viewBox", "0 0 " + width + " " + height)
+            .attr("id","graph")
             .call(d3.behavior.zoom().on("zoom", function () {
                 vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
             }))
@@ -504,8 +508,8 @@ line.link {
                                 return d;
                             })
                             .append("svg")
-                            .attr("width", "10px")
-                            .attr("height", "10px")
+                            .attr("width", "5px")
+                            .attr("height", "5px")
                             .append("circle")
                             .attr("r", 10)
                             .attr("cx", 5)

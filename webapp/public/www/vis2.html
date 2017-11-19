@@ -87,12 +87,32 @@
                 margin-top:100px;
                 background: #FFF;
                 text-align: center;
-                padding-top:2px;
-                padding-left: 1.2%;
+                padding-top:1px;
+                padding-left: 1%;
                 border: solid 1px #ccc;
                 min-height: 10%;
                 min-width: 5%;
                 font-size: 7pt;
+        }
+
+        #right-side-bar{
+            position: fixed;
+            top: 0;
+            right:0;
+            margin-top:65px;
+            margin-right:10px;
+            background: #FFF;
+            text-align: center;
+            padding-top:2px;
+            padding-left: 1.2%;
+            float:left;
+            min-height: 10%;
+            min-width: 5%;
+            font-size: 0.6rem;
+        }
+        .list-group{
+            float:left;
+            margin-left:5px;
         }
     /*charts*/
     .chart {
@@ -201,10 +221,7 @@
     width: 220px;
   }
 
-#right-side-bar {
-    position: absolute;
-    right:20px;
-}
+
     </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
@@ -237,16 +254,20 @@
             <a class="navbar-brand" href="#"><img src="..\image\logo.png" height="30" width="100"></a>
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html">Cluster of Tags</a>
+                    <a class="nav-link" href="vis1">Cluster of Tags</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="vis2.html">Link<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="vis2">Link<span class="sr-only">(current)</span></a>
                 </li>
             </ul>
 
         </div>
     </nav>
     <br/>
+    <div id="legend">
+        <div class='title'><b>Legend</b></div>
+
+    </div>
     <div id="container"></div>
     <div id="sidebar">
         <div id='charts'>
@@ -258,11 +279,26 @@
             </div>
         </div>
     </div>
-    <div id="right-side-bar">
-        <div class="list-group1">
 
+        <div id="right-side-bar">
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action" > <b>Betweenness Ranking </b></a>
+                <a id="first" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#fff8e2" > 1. </a>
+                <a id="second" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#edeeef"> 2. </a>
+                <a id="third" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#f9ebe1">3. </a>
+                <a id="fourth" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#fff"> 4. </a>
+                <a id="fifth" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#fff"> 5. </a>
+            </div>
+
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action" > <b>Degree Ranking </b></a>
+                <a id="dfirst" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#fff8e2" > 1. </a>
+                <a id="dsecond" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#edeeef"> 2. </a>
+                <a id="dthird" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#f9ebe1">3. </a>
+                <a id="dfourth" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#fff"> 4. </a>
+                <a id="dfifth" href="#" target="_blank" class="list-group-item list-group-item-action" style="background-color:#fff"> 5. </a>
+            </div>
         </div>
-    </div>
     <script>
     let query = function (statements, transform) {
                 var config = {
@@ -441,7 +477,6 @@
 
 
     }
-
     let barVolumeChart = function(dim, start, end, renderGraph, graph){
 
         let dates = dim.group(d3.timeDay)
@@ -699,14 +734,18 @@
             return chart;
         }
     }
-    let nodeRadius = 10,
-        inertia = 0.8,
-        springForce = 0.01,
-        springLength = 50,
-        maxDisplacement = 15,
-        gravity = 1.5;
-
     let anotherSigmaVis = function(data){
+        // When the stage is clicked, we just color each
+        // node and edge with its original color.
+        sigma.classes.graph.addMethod('neighbors', function(nodeId) {
+            var k,
+                neighbors = {},
+                index = this.allNeighborsIndex[nodeId] || {};
+
+            for (k in index)
+                neighbors[k] = this.nodesIndex[k];
+            return neighbors;
+        });
         // Create cross filter on link edge
         let edgeCrossFilter = crossfilter(data.links)
 
@@ -731,6 +770,19 @@
                 }
             },
         });
+        s2.bind('clickStage', function(e) {
+            console.log(e)
+            s2.graph.nodes().forEach(function(n) {
+                n.color = s.graph.nodes(n.id).color;
+            });
+
+            s2.graph.edges().forEach(function(e) {
+                e.color = e.originalColor;
+            });
+
+            // Same as in the previous event:
+            s2.refresh();
+        });
         let cam = s2.addCamera('cam1')
         data.nodes.forEach((d, i, a) => {
             s.graph.addNode({
@@ -751,6 +803,31 @@
         edgeByDate.filter([new Date(2016,0), new Date(2017,0)])
         barVolumeChart(edgeByDate, new Date(2009,0), new Date(2017,9), render, s2)
 
+        // Highlight nodes and edges on click.
+        s2.bind('clickNode', function(e) {
+            console.log(e)
+            var nodeId = e.data.node.id,
+                toKeep = s2.graph.neighbors(nodeId);
+                toKeep[nodeId] = e.data.node;
+
+            s2.graph.nodes().forEach(function(n) {
+                if (toKeep[n.id])
+                    n.color = n.color
+                else
+                    n.color = '#eee';
+            });
+
+            s2.graph.edges().forEach(function(e) {
+                if (toKeep[e.source] && toKeep[e.target])
+                    e.color = e.originalColor;
+                else
+                    e.color = '#eee';
+            });
+            // Since the data has been modified, we need to
+            // call the refresh method to make the colors
+            // update effective.
+            s2.refresh();
+        });
         function render(){
             s2.graph.clear();
 
@@ -770,9 +847,7 @@
             let allList = sourceList.concat(targetList)
             let uniqueNodes = allList.filter((v,i,arr) => i==arr.indexOf(v))
                 .filter(o => o in nodesInTopN)
-//            console.log(nodesInTopN)
-//            console.log(uniqueNodes)
-//            console.log(pairList)
+
             uniqueNodes.forEach(r => s2.graph.addNode({
                 id: r,
                 label: s.graph.nodes(r).label,
@@ -809,32 +884,56 @@
                     .domain([minVal,maxVal])
                     .interpolator(d3.interpolateRgb.gamma(3.0)("grey","orange"))
                 Object.keys(obj).forEach(function(k) {
-//                console.log(k, obj[k])
+                    s.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
                     s2.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
                 });
 
-                //s.graph.nodes(k).color = colorSeq(obj[k])
-
-                    s2.refresh();
+                s2.refresh();
                 let topData = Object.keys(obj).sort(function(a, b){return obj[b]-obj[a]}).slice(0, 5);
-//                d3.select('.list-group1')
-//                    .text('Betweenness Ranking')
-//                    .append('ol')
-//                    .selectAll('ol')
-//                    .data(topData)
-//                    .enter()
-//                    .append('li')
-//                    .attr('class','list-group-item list-group-item-action')
-//                    .text(d => s.graph.nodes(d).label)
-//                    .append('a')
-//                    .attr('href','')
+
+                var first = document.getElementById("first");
+                var second = document.getElementById("second");
+                var third = document.getElementById("third");
+                var fourth = document.getElementById("fourth");
+                var fifth = document.getElementById("fifth");
+
+                first.innerHTML = "1. " + s.graph.nodes(topData[0]).label
+                second.innerHTML = "2. " + s.graph.nodes(topData[1]).label
+                third.innerHTML = "3. " + s.graph.nodes(topData[2]).label
+                fourth.innerHTML = "4. " + s.graph.nodes(topData[3]).label
+                fifth.innerHTML = "5. " + s.graph.nodes(topData[4]).label
+
+                first.href = "https://stackoverflow.com/users/" + topData[0]
+                second.href = "https://stackoverflow.com/users/" + topData[1]
+                third.href = "https://stackoverflow.com/users/" + topData[2]
+                fourth.href = "https://stackoverflow.com/users/" + topData[3]
+                fifth.href = "https://stackoverflow.com/users/" + topData[4]
+
             });
-            console.log(s2.graph.nodes())
             nodeArr = s2.graph.nodes().map(v => s2.graph.degree(v.id))
             let topDegrees = s2.graph.nodes()
                 .sort((a, b) => s2.graph.degree(b.id) - s2.graph.degree(a.id))
                 .slice(0, 5);
             console.log(topDegrees)
+            var dfirst = document.getElementById("dfirst");
+            var dsecond = document.getElementById("dsecond");
+            var dthird = document.getElementById("dthird");
+            var dfourth = document.getElementById("dfourth");
+            var dfifth = document.getElementById("dfifth");
+
+            dfirst.innerHTML = "1. " + topDegrees[0].label
+            dsecond.innerHTML = "2. " + topDegrees[1].label
+            dthird.innerHTML = "3. " + topDegrees[2].label
+            dfourth.innerHTML = "4. " + topDegrees[3].label
+            dfifth.innerHTML = "5. " + topDegrees[4].label
+
+            dfirst.href = "https://stackoverflow.com/users/" + topDegrees[0].id
+            dsecond.href = "https://stackoverflow.com/users/" + topDegrees[1].id
+            dthird.href = "https://stackoverflow.com/users/" + topDegrees[2].id
+            dfourth.href = "https://stackoverflow.com/users/" + topDegrees[3].id
+            dfifth.href = "https://stackoverflow.com/users/" + topDegrees[4].id
+
+
             binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
             s2.graph.nodes().forEach(v => v.size = binner(s2.graph.degree(v.id)))
 
