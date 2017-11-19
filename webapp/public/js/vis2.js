@@ -62,17 +62,17 @@ d3.csv('../js/flights-3m.json', (error, flights) => {
   // .chart elements in the DOM, bind the charts to the DOM and render them.
   // We also listen to the chart's brush events to update the display.
   const chart = d3.selectAll('.chart')
-    .data(charts);
+        .data(charts);
 
-  // Render the initial lists.
-  const list = d3.selectAll('.list')
-    .data([flightList]);
+    // Render the initial lists.
+    const list = d3.selectAll('.list')
+        .data([flightList]);
 
-  // Render the total.
-  d3.selectAll('#total')
-    .text(formatNumber(flight.size()));
+    // Render the total.
+    d3.selectAll('#total')
+        .text(formatNumber(flight.size()));
 
-  renderAll();
+    renderAll();
 
 
 

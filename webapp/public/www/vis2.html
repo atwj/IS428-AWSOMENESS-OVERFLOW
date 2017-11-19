@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -30,8 +29,8 @@
             margin-left:10px;
             font-size: 8pt;
             background: #f44556;
-            border:none; 
-           
+            border:none;
+
         }
         #stop:hover{
             background-color: #f44336;
@@ -42,7 +41,7 @@
             padding:0.5px 11px 1px 0.5px;
             font-size: 9pt !important;
             background-color:#008Cf4;
-            border:none; 
+            border:none;
             color:#000 !important;
             text-decoration: none;
         }
@@ -58,9 +57,9 @@
                 position: fixed;
                 bottom: 0;
                 background: #FFF;
-                
+
                 padding-left:5%;
-                
+
                 min-height: 10%;
                 min-width: 80%;
         }
@@ -71,12 +70,12 @@
                 margin-top:100px;
                 background: #FFF;
                 text-align: center;
-                padding-top:2px; 
+                padding-top:2px;
                 padding-left: 1.2%;
                 border: solid 1px #ccc;
                 min-height: 10%;
                 min-width: 5%;
-                font-size: 7pt; 
+                font-size: 7pt;
         }
     /*charts*/
     .chart {
@@ -84,127 +83,139 @@
         height: 50px;
         margin-bottom: 10px;
 
-    }
+  }
 
-    .reset {
-        padding-left: 1em;
-        font-size: smaller;
-        color: #ccc;
-    }
+  .reset {
+    padding-left: 1em;
+    font-size: smaller;
+    color: #ccc;
+  }
 
-    .background.bar {
-        fill: #ccc;
-        
-    }
+  .background.bar {
+    fill: #ccc;
 
-    .foreground.bar {
-        fill: steelblue;
-    }
+  }
 
-    .brush-handle {
-        fill: #eee;
-        stroke: #666;
-    }
+  .foreground.bar {
+    fill: steelblue;
+  }
 
-    #hour-chart {
-        width: 260px;
-    }
+  .brush-handle {
+    fill: #eee;
+    stroke: #666;
+  }
 
-    #delay-chart {
-        width: 230px;
-    }
+  #hour-chart {
+    width: 260px;
+  }
 
-    #distance-chart {
-        width: 430px;
-    }
+  #delay-chart {
+    width: 230px;
+  }
 
-    #date-chart {
-        width: 920px;
-    }
+  #distance-chart {
+    width: 430px;
+  }
 
-    #flight-list {
-        min-height: 1024px;
-    }
+  #date-chart {
+    width: 920px;
+  }
 
-    #flight-list .date,
-    #flight-list .day {
-        margin-bottom: .4em;
-    }
+  #flight-list {
+    min-height: 1024px;
+  }
 
-    #flight-list .flight {
-        line-height: 1.5em;
-        background: #eee;
-        width: 925px;
-        margin-bottom: 1px;
-    }
+  #flight-list .date,
+  #flight-list .day {
+    margin-bottom: .4em;
+  }
 
-    #flight-list .time {
-        color: #999;
-    }
+  #flight-list .flight {
+    line-height: 1.5em;
+    background: #eee;
+    width: 925px;
+    margin-bottom: 1px;
+  }
 
-    #flight-list .flight div {
-        display: inline-block;
-    }
+  #flight-list .time {
+    color: #999;
+  }
 
-    #flight-list div.time {
-        width: 100px;
-        text-align: left;
-    }
+  #flight-list .flight div {
+    display: inline-block;
+  }
 
-    #flight-list div.origin {
-        width: 50px;
-        text-align: right;
-        padding-right: 15px;
-    }
+  #flight-list div.time {
+    width: 100px;
+    text-align: left;
+  }
 
-    #flight-list div.destination {
-        width: 100px;
-        text-align: left;
-        padding-left: 15px;
-    }
+  #flight-list div.origin {
+    width: 50px;
+    text-align: right;
+    padding-right: 15px;
+  }
 
-    #flight-list div.distance {
-        width: 100px;
-        text-align: left;
-    }
+  #flight-list div.destination {
+    width: 100px;
+    text-align: left;
+    padding-left: 15px;
+  }
 
-    #flight-list div.delay {
-        width: 120px;
-        padding-right: 0px;
-        text-align: right;
-    }
+  #flight-list div.distance {
+    width: 100px;
+    text-align: left;
+  }
 
-    #flight-list .early {
-        color: green;
-    }
+  #flight-list div.delay {
+    width: 120px;
+    padding-right: 0px;
+    text-align: right;
+  }
 
-    aside {
-        position: absolute;
-        left: 740px;
-        font-size: smaller;
-        width: 220px;
-    }
+  #flight-list .early {
+    color: green;
+  }
+
+  aside {
+    position: absolute;
+    left: 740px;
+    font-size: smaller;
+    width: 220px;
+  }
+
+#right-side-bar {
+    position: absolute;
+    right:20px;
+}
     </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/sigma.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.forceAtlas2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.1/plugins/sigma.layout.noverlap.min.js"></script>
 
-<script src='https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js' defer></script>
-<script src='https://d3js.org/d3.v4.min.js' defer></script>
+
+
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>-->
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.js"></script>-->
+<!--<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js' defer></script>-->
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>-->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/crossfilter2/1.4.3/crossfilter.min.js' defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reductio/0.6.3/reductio.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.9/dc.min.js"></script>-->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
-<script src='../js/vis2.js' defer></script>
+<script src="jsnetworkx.js"></script>
+<!--<script src='../js/vis2.js' defer></script>-->
 
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01"
             aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+        <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
             <a class="navbar-brand" href="#"><img src="..\image\logo.png" height="30" width="100"></a>
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -223,17 +234,16 @@
     <div id="sidebar">
         <div id='charts'>
             <div id='date-chart' class='chart'>
-                <div class='title'><b>Date</b></div>
+                <div class='title'>Date</div>
                 <button id="stop">Stop animation</button>
                 <!--<svg width="960" height="600"></svg>-->
 
             </div>
         </div>
-     <div id="legend">
-        <div class='title'><b>Legend</b></div>
-        </div>    
-        <script>
-            let query = function (statements, transform) {
+        <div id="right-side-bar"></div>
+    </div>
+    <script>
+    let query = function (statements, transform) {
                 var config = {
                     method: 'post',
                     headers: { 'Content-type': 'application/json', 'Accept': 'application/json; charset=utf-8', 'X-stream': true },
@@ -247,7 +257,7 @@
                 // returns promise
                 return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
             }
-            let vis = function (data) {
+    let vis = function (data) {
                 let svg = d3.select("svg"),
                     width = +svg.attr("width"),
                     height = +svg.attr("height");
@@ -272,153 +282,636 @@
                     d.fy = null;
                 }
             }
-            let getStatementByTag = function (tag) {
-                return [
-                    {
-                        "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-                        "WITH p MATCH (from:User)-[r:Comment]->(p)<-[:CREATES]-(to:User) " +
-                        "RETURN {from:from,rel:r,to:to}",
-                        "parameters": {
-                            "tag": tag
-                        },
-                        "resultDataContents": ["row"],
-                    },
-                    {
-                        "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-                        "WITH p MATCH (from:User)-[r:LAST_EDITED]->(p)<-[:CREATES]-(to:User)" +
-                        "RETURN {from:from, rel:r, to:to}",
-                        "parameters": {
-                            "tag": tag
-                        },
-                        "resultDataContents": ["row"]
-                    },
-                    {
-                        "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-                        "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)-[r:ANSWERS]->(p)-[:CREATES]-(to:User)" +
-                        "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
-                        "parameters": {
-                            "tag": tag
-                        },
-                        "resultDataContents": ["row"]
-                    },
-                    {
-                        "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
-                        "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)<-[r:PARENT_OF]-(p)-[:CREATES]-(to:User)" +
-                        "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
-                        "parameters": {
-                            "tag": tag
-                        },
-                        "resultDataContents": ["row"]
-                    }
-                ]
+    let getStatementByTag = function(tag){
+        return [
+            {
+                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                "WITH p MATCH (from:User)-[r:Comment]->(p)<-[:CREATES]-(to:User) " +
+                "RETURN {from:from,rel:r,to:to}",
+                "parameters": {
+                    "tag":tag
+                },
+                "resultDataContents":["row"],
+            },
+            {
+                "statement": "MATCH (t:Tag {TagId: $tag})--(p:Posts) " +
+                "WITH p MATCH (from:User)-[r:LAST_EDITED]->(p)<-[:CREATES]-(to:User)" +
+                "RETURN {from:from, rel:r, to:to}",
+                "parameters":{
+                    "tag":tag
+                },
+                "resultDataContents":["row"]
+            },
+            {
+                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
+                "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)-[r:ANSWERS]->(p)-[:CREATES]-(to:User)"+
+                "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
+                "parameters":{
+                    "tag":tag
+                },
+                "resultDataContents":["row"]
+            },
+            {
+                "statement":"MATCH (t:Tag {TagId: $tag})--(p:Posts) "+
+                "WITH p MATCH (from:User)-[:CREATES]-(a:Posts)<-[r:PARENT_OF]-(p)-[:CREATES]-(to:User)"+
+                "RETURN {from:from, rel:{CreationDate:a.CreationDate}, to:to}",
+                "parameters":{
+                    "tag":tag
+                },
+                "resultDataContents":["row"]
             }
+        ]
+    }
+    let sigmavis = function(data){
+        //JSNETWORKX GRAPH
+        var G = new jsnx.Graph();
+        data.nodes.forEach((d, i, a) => {
+            G.addNode(d.UserId)
+        });
 
-            let sigmavis = function (data) {
+        data.links.forEach((d,i) => {
+            G.addEdge(d.source, d.target)
+        });
 
-                sigma.settings.nodesPowRatio = 0.5;
-                sigma.settings.autoRescale = false;
+        let results = new jsnx.genBetweennessCentrality(G);
 
-                let s = new sigma({
-                    renderer: {
-                        container: document.getElementById('container'),
-                        type: 'canvas',
-                        settings: {
-                            defaultNodeColor: '#ec5148',
-                            edgeColor: 'default',
-                            defaultEdgeColor: '#ccc',
-                            animationsTime: 5000,
-                            drawLabels: false,
-                            //batchEdgesDrawing: true,
-                            hideEdgesOnMove: true,
-                            sideMargin: 1,
-                        }
-                    },
-                });
+        sigma.settings.nodesPowRatio = 0.5;
+        sigma.settings.autoRescale = false;
 
-                data.nodes.forEach((d, i, a) => {
-                    s.graph.addNode({
-                        id: d.UserId,
-                        label: d.DisplayName,
-                        x: Math.random() * 1000,
-                        y: Math.random() * 1000,
-                        size: 1,
-                    })
-                })
-
-                data.links.forEach((d, i) => {
-                    s.graph.addEdge({
-                        id: i,
-                        source: d.source,
-                        target: d.target
-                    })
-                })
-
-                isStop = false
-                button = document.getElementById('stop')
-                button.onclick = () => {
-                    if (isStop) {
-                        s.startForceAtlas2()
-                    } else {
-                        s.stopForceAtlas2()
-                        isStop = true
-                    }
+        let s = new sigma({
+            renderer: {
+                container: document.getElementById('container'),
+                type: 'canvas',
+                settings: {
+                    defaultNodeColor: '#ec5148',
+                    edgeColor: 'default',
+                    defaultEdgeColor: '#ccc',
+                    animationsTime: 5000,
+                    //drawLabels: false,
+                    //batchEdgesDrawing: true,
+                    hideEdgesOnMove: true,
+                    sideMargin: 1,
+                    labelThreshold: 8,
                 }
-                nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
-                binner = d3.scaleQuantize().domain([Math.min.apply(null, nodeArr), Math.max.apply(null, nodeArr)]).range([2, 4, 8, 16, 32])
-                s.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
-                // Finally, let's ask our sigma instance to refresh:
-                s.refresh();
-                s.configForceAtlas2({
+            },
+        });
 
-                    //            worker: true,
-                    //            autoStop: false,
-                    //            background: false,
-                    //            adjustSizes: true,
-                    gravity: 20
-                });
+        data.nodes.forEach((d, i, a) => {
+            s.graph.addNode({
+                id: d.UserId,
+                label: d.DisplayName,
+                x: Math.random() * 1000,
+                y:Math.random() * 1000,
+                size: 1,
+            })
+        })
+
+        data.links.forEach((d,i) => {
+            s.graph.addEdge({
+                id: i,
+                source: d.source,
+                target:d.target
+            })
+        })
+
+        results.then(function(a){
+            let obj = a._stringValues
+            let minVal = Math.sqrt(Math.min.apply(null,Object.values(obj)))
+            let maxVal = Math.sqrt(Math.max.apply(null,Object.values(obj)))
+            var colorSeq = d3.scaleSequential()
+                .domain([minVal,maxVal])
+                .interpolator(d3.interpolateRgb.gamma(3.0)("red","blue"))
+            Object.keys(obj).forEach(function(k) {
+//                console.log(k, obj[k])
+                s2.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
+                //s.graph.nodes(k).color = colorSeq(obj[k])
+            });
+            s2.refresh();
+        });
+
+        //PAUSE ANIMATION
+        isStop = false
+        button = document.getElementById('stop')
+        button.onclick = () => {
+            if (isStop) {
                 s.startForceAtlas2()
+                isStop = false
+            }else{
+                s.stopForceAtlas2()
+                isStop = true
             }
-            let pipe = function (data) {
-                console.log(data)
-                let resultlists = data.results.map(o => o.data).reduce((a, v) => a.concat(v), [])
-                console.log(resultlists)
-                let linksmap = {}
-                for (let i = 0; i < resultlists.length; i++) {
-                    let row = resultlists[i].row[0]
-                    let key = row.from.UserId + '-' + row.to.UserId
-                    if (linksmap.hasOwnProperty(key)) {
+        }
 
-                    } else {
-                        linksmap[key] = {
+        //NODE SIZE BASED ON DEGREE
+        nodeArr = s.graph.nodes().map(v => s.graph.degree(v.id))
+        binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
+        s2.graph.nodes().forEach(v => v.size = binner(s.graph.degree(v.id)))
+        // Finally, let's ask our sigma instance to refresh:
+        s2.refresh();
+        s2.configForceAtlas2({
 
+//            worker: true,
+//            autoStop: false,
+//            background: false,
+//            adjustSizes: true,
+            gravity:20
+        });
+        s.startForceAtlas2()
+
+
+    }
+
+    let barVolumeChart = function(dim, start, end, renderGraph, graph){
+
+        let dates = dim.group(d3.timeDay)
+        const formatNumber = d3.format(',d');
+        const charts = [
+            barChart()
+                .dimension(dim)
+                .group(dates)
+                .round(d3.timeDay.round)
+                .x(d3.scaleTime()
+                    .domain([start, end])
+                    .rangeRound([0, 10 * 90]))
+                .filter([new Date(2016,0), new Date(2017,0)])
+        ]
+        const chart = d3.selectAll('.chart')
+            .data(charts);
+
+        function render(method) {
+            d3.select(this).call(method);
+        }
+
+        // Whenever the brush moves, re-rendering everything.
+        function renderAll() {
+            chart.each(render);
+            // what's this
+//            d3.select('#active').text(formatNumber(all.value()));
+            renderGraph()
+        }
+        renderAll();
+        function barChart() {
+            if (!barChart.id) barChart.id = 0;
+
+            let margin = { top: 10, right: 13, bottom: 20, left: 10 };
+            let x;
+            let y = d3.scaleLinear().range([100, 0]);
+            const id = barChart.id++;
+            const axis = d3.axisBottom();
+            const brush = d3.brushX();
+            let brushDirty;
+            let dimension;
+            let group;
+            let round;
+            let gBrush;
+
+            function chart(div) {
+                const width = x.range()[1];
+                const height = y.range()[0];
+                brush.extent([[0, 0], [width, height]]);
+
+                y.domain([0, group.top(1)[0].value]);
+
+                div.each(function () {
+                    const div = d3.select(this);
+                    let g = div.select('g');
+
+                    // Create the skeletal chart.
+                    if (g.empty()) {
+                        div.select('.title').append('a')
+                            .attr('href', `javascript:reset(${id})`)
+                            .attr('class', 'reset')
+                            .text('reset')
+                            .style('display', 'none');
+
+                        g = div.append('svg')
+                            .attr('width', width + margin.left + margin.right)
+                            .attr('height', height + margin.top + margin.bottom)
+                            .append('g')
+                            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+                        g.append('clipPath')
+                            .attr('id', `clip-${id}`)
+                            .append('rect')
+                            .attr('width', width)
+                            .attr('height', height);
+
+                        g.selectAll('.bar')
+                            .data(['background', 'foreground'])
+                            .enter().append('path')
+                            .attr('class', d => `${d} bar`)
+                            .datum(group.all());
+
+                        g.selectAll('.foreground.bar')
+                            .attr('clip-path', `url(#clip-${id})`);
+
+                        g.append('g')
+                            .attr('class', 'axis')
+                            .attr('transform', `translate(0,${height})`)
+                            .call(axis);
+
+                        // Initialize the brush component with pretty resize handles.
+                        gBrush = g.append('g')
+                            .attr('class', 'brush')
+                            .call(brush);
+
+                        gBrush.selectAll('.handle--custom')
+                            .data([{ type: 'w' }, { type: 'e' }])
+                            .enter().append('path')
+                            .attr('class', 'brush-handle')
+                            .attr('cursor', 'ew-resize')
+                            .attr('d', resizePath)
+                            .style('display', 'none');
+                    }
+
+                    // Only redraw the brush if set externally.
+                    if (brushDirty !== false) {
+                        const filterVal = brushDirty;
+                        brushDirty = false;
+
+                        div.select('.title a').style('display', d3.brushSelection(div) ? null : 'none');
+
+                        if (!filterVal) {
+                            g.call(brush);
+
+                            g.selectAll(`#clip-${id} rect`)
+                                .attr('x', 0)
+                                .attr('width', width);
+
+                            g.selectAll('.brush-handle').style('display', 'none');
+                            renderAll();
+                        } else {
+                            const range = filterVal.map(x);
+                            brush.move(gBrush, range);
                         }
                     }
-                }
-                let links = resultlists.map(function (o) {
-                    return {
-                        "source": o.row[0].from.UserId,
-                        "target": o.row[0].to.UserId,
-                        "time": o.row[0].rel.CreationDate
-                    }
-                })
 
-                let nodesmap = {}
-                for (let i = 0; i < resultlists.length; i++) {
-                    let row = resultlists[i].row[0]
-                    nodesmap[row.from.UserId] = row.from
-                    nodesmap[row.to.UserId] = row.to
+                    g.selectAll('.bar').attr('d', barPath);
+                });
+
+                function barPath(groups) {
+                    const path = [];
+                    let i = -1;
+                    const n = groups.length;
+                    let d;
+                    while (++i < n) {
+                        d = groups[i];
+                        path.push('M', x(d.key), ',', height, 'V', y(d.value), 'h9V', height);
+                    }
+                    return path.join('');
                 }
-                let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
-                console.log(nodes)
-                return {
-                    "nodes": nodes,
-                    "links": links
+
+                function resizePath(d) {
+                    const e = +(d.type === 'e');
+                    const x = e ? 1 : -1;
+                    const y = height / 3;
+                    return `M${0.5 * x},${y}A6,6 0 0 ${e} ${6.5 * x},${y + 6}V${2 * y - 6}A6,6 0 0 ${e} ${0.5 * x},${2 * y}ZM${2.5 * x},${y + 8}V${2 * y - 8}M${4.5 * x},${y + 8}V${2 * y - 8}`;
                 }
             }
-            let promise = query(getStatementByTag("tableau"), [JSON.parse, pipe])
-            promise.then((data) => sigmavis(data.data))
-                .catch(e => console.log(e))
-        </script>
+
+            brush.on('start.chart', function () {
+                const div = d3.select(this.parentNode.parentNode.parentNode);
+                div.select('.title a').style('display', null);
+            });
+
+            brush.on('brush.chart', function () {
+                const g = d3.select(this.parentNode);
+                const brushRange = d3.event.selection || d3.brushSelection(this); // attempt to read brush range
+                const xRange = x && x.range(); // attempt to read range from x scale
+                let activeRange = brushRange || xRange; // default to x range if no brush range available
+
+                const hasRange = activeRange &&
+                    activeRange.length === 2 &&
+                    !isNaN(activeRange[0]) &&
+                    !isNaN(activeRange[1]);
+
+                if (!hasRange) return; // quit early if we don't have a valid range
+
+                // calculate current brush extents using x scale
+                let extents = activeRange.map(x.invert);
+
+                // if rounding fn supplied, then snap to rounded extents
+                // and move brush rect to reflect rounded range bounds if it was set by user interaction
+                if (round) {
+                    extents = extents.map(round);
+                    activeRange = extents.map(x);
+
+                    if (
+                        d3.event.sourceEvent &&
+                        d3.event.sourceEvent.type === 'mousemove'
+                    ) {
+                        d3.select(this).call(brush.move, activeRange);
+                    }
+                }
+
+                // move brush handles to start and end of range
+                g.selectAll('.brush-handle')
+                    .style('display', null)
+                    .attr('transform', (d, i) => `translate(${activeRange[i]}, 0)`);
+
+                // resize sliding window to reflect updated range
+                g.select(`#clip-${id} rect`)
+                    .attr('x', activeRange[0])
+                    .attr('width', activeRange[1] - activeRange[0]);
+
+                // filter the active dimension to the range extents
+                dimension.filterRange(extents);
+
+                // re-render the other charts accordingly
+                renderAll();
+            });
+
+            brush.on('end.chart', function () {
+                // reset corresponding filter if the brush selection was cleared
+                // (e.g. user "clicked off" the active range)
+                if (!d3.brushSelection(this)) {
+                    reset(id);
+                }
+            });
+
+            chart.margin = function (_) {
+                if (!arguments.length) return margin;
+                margin = _;
+                return chart;
+            };
+
+            chart.x = function (_) {
+                if (!arguments.length) return x;
+                x = _;
+
+                axis.scale(x);
+                return chart;
+            };
+
+            chart.y = function (_) {
+                if (!arguments.length) return y;
+                y = _;
+                return chart;
+            };
+
+            chart.dimension = function (_) {
+                if (!arguments.length) return dimension;
+                dimension = _;
+                return chart;
+            };
+
+            chart.filter = _ => {
+                if (!_) dimension.filterAll();
+                brushDirty = _;
+                return chart;
+            };
+
+            chart.group = function (_) {
+                if (!arguments.length) return group;
+                group = _;
+                return chart;
+            };
+
+            chart.round = function (_) {
+                if (!arguments.length) return round;
+                round = _;
+                return chart;
+            };
+
+            chart.gBrush = () => gBrush;
+
+            return chart;
+        }
+    }
+    let nodeRadius = 10,
+        inertia = 0.8,
+        springForce = 0.01,
+        springLength = 50,
+        maxDisplacement = 15,
+        gravity = 1.5;
+    sigma.classes.graph.addMethod('computePhysics', function() {
+        var i,
+            j,
+            l = this.nodesArray.length,
+            s,
+            t,
+            dX,
+            dY,
+            d,
+            v;
+        for (i = 0; i < l; i++) {
+            s = this.nodesArray[i];
+            s.dX *= inertia;
+            s.dY *= inertia;
+            s.dY += gravity;
+            for (j = i + 1; j < l; j++) {
+                t = this.nodesArray[j];
+                dX = s.x - t.x;
+                dY = s.y - t.y;
+                d = Math.sqrt(dX * dX + dY * dY);
+                v = ((d < 2 * nodeRadius) ? (2 * nodeRadius - d) / d / 2 : 0) -
+                    ((this.allNeighborsIndex[s.id] || {})[t.id] ? springForce * (d - springLength) : 0);
+                t.dX -= v * dX;
+                t.dY -= v * dY;
+                s.dX += v * dX;
+                s.dY += v * dY;
+            }
+        }
+        for (i = 0; i < l; i++) {
+            s = this.nodesArray[i];
+            s.dX = Math.max(Math.min(s.dX, maxDisplacement), -maxDisplacement);
+            s.dY = Math.max(Math.min(s.dY, maxDisplacement), -maxDisplacement);
+            s.x += s.dX;
+            s.y += s.dY;
+            // Collision with the ground:
+            s.y = Math.min(-nodeRadius, s.y);
+        }
+    });
+    let anotherSigmaVis = function(data){
+        // Create cross filter on link edge
+        let edgeCrossFilter = crossfilter(data.links)
+
+        // Create nodes list using sigma, dummy graph for referencing nodes
+        let s = new sigma()
+        let s2 = new sigma({
+            renderer: {
+                container: document.getElementById('container'),
+                type: 'canvas',
+                settings: {
+                    nodesPowRatio: 0.5,
+                    autoRescale: false,
+                    defaultNodeColor: '#ec5148',
+                    edgeColor: 'default',
+                    defaultEdgeColor: '#ccc',
+                    animationsTime: 5000,
+                    //drawLabels: false,
+                    //batchEdgesDrawing: true,
+                    hideEdgesOnMove: true,
+                    sideMargin: 1,
+                    labelThreshold: 8
+                }
+            },
+        });
+        let cam = s2.addCamera('cam1')
+        data.nodes.forEach((d, i, a) => {
+            s.graph.addNode({
+                id: d.UserId,
+                label: d.DisplayName,
+                x: Math.random() * 1000,
+                y:Math.random() * 1000,
+                size: 1
+            })
+        })
+
+        // Create dimmension by time.
+        let edgeByDate = edgeCrossFilter.dimension(function(d){
+            var t = new Date(1970,0)
+            t.setSeconds(d.time)
+            return t
+        })
+        edgeByDate.filter([new Date(2016,0), new Date(2017,0)])
+        barVolumeChart(edgeByDate, new Date(2009,0), new Date(2017,9), render, s2)
+
+        function render(){
+            s2.graph.clear();
+
+            // Get all edges within filtered date.
+            let graphObjects = edgeByDate.top(Infinity)
+            let filteredCF = crossfilter(edgeCrossFilter.allFiltered())
+            let pairDim = filteredCF.dimension(d=> [d.source,d.target])
+            //get people with top 10 highest degrees
+            let pairList = pairDim.group().reduceCount().top(Infinity)
+            let nodesInTopN = pairList.reduce((a,v)=>{
+                a[v.key[0]] = 0
+                a[v.key[1]] = 0
+                return a
+            },{})
+            let sourceList = graphObjects.map(v => v.source).filter((v,i,arr) => i==arr.indexOf(v))
+            let targetList = graphObjects.map(v => v.target).filter((v,i,arr) => i==arr.indexOf(v))
+            let allList = sourceList.concat(targetList)
+            let uniqueNodes = allList.filter((v,i,arr) => i==arr.indexOf(v))
+                .filter(o => o in nodesInTopN)
+//            console.log(nodesInTopN)
+//            console.log(uniqueNodes)
+//            console.log(pairList)
+            uniqueNodes.forEach(r => s2.graph.addNode({
+                id: r,
+                label: s.graph.nodes(r).label,
+                x: Math.random() * 1000,
+                y:Math.random() * 1000,
+                size: 1
+            }))
+
+            pairList.forEach((r,i) => {
+                s2.graph.addEdge({
+                    id: i,
+                    source: r.key[0],
+                    target: r.key[1],
+                    size: r.value * 10
+                })
+            })
+            console.log(uniqueNodes)
+            console.log(pairList)
+            //JSNETWORKX GRAPH
+            var G = new jsnx.DiGraph();
+            uniqueNodes.forEach((d, i, a) => {
+                G.addNode(d)
+            });
+            pairList.forEach((d,i) => {
+                G.addEdge(d.key[0], d.key[1])
+            });
+            let results = new jsnx.genBetweennessCentrality(G);
+
+            results.then(function(a){
+                let obj = a._stringValues
+                let minVal = Math.sqrt(Math.min.apply(null,Object.values(obj)))
+                let maxVal = Math.sqrt(Math.max.apply(null,Object.values(obj)))
+                let colorSeq = d3.scaleSequential()
+                    .domain([minVal,maxVal])
+                    .interpolator(d3.interpolateRgb.gamma(3.0)("grey","orange"))
+                Object.keys(obj).forEach(function(k) {
+//                console.log(k, obj[k])
+                    s2.graph.nodes(k).color = colorSeq(Math.sqrt(obj[k]))
+                });
+
+                //s.graph.nodes(k).color = colorSeq(obj[k])
+
+                    s2.refresh();
+                let topData = Object.keys(obj).sort(function(a, b){return obj[b]-obj[a]}).slice(0, 10);
+                d3.select('#right-side-bar')
+                    .append('div')
+                    .append('ol')
+                    .selectAll('li')
+                    .data(topData)
+                    .enter()
+                    .append('li')
+                    .text(d=> s.graph.nodes(d).label)
+            });
+            console.log(s2.graph.nodes())
+            nodeArr = s2.graph.nodes().map(v => s2.graph.degree(v.id))
+            let topDegrees = s2.graph.nodes()
+                .sort((a, b) => s2.graph.degree(b.id) - s2.graph.degree(a.id))
+                .slice(0, 10);
+            console.log(topDegrees)
+            binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
+            s2.graph.nodes().forEach(v => v.size = binner(s2.graph.degree(v.id)))
+
+            d3.select('#right-side-bar')
+                .append('div')
+                .append('ol')
+                .selectAll('li')
+                .data(topDegrees)
+                .enter()
+                .append('li')
+                .text(d=> s2.graph.nodes(d).label)
+
+
+//            console.log(pairList.length)
+//            console.log(graphObjects.length)
+            s2.refresh()
+            cam.goTo({
+                x:250,
+                y:500,
+                ratio:1000,
+                angle:45
+            })
+            if(s2.isForceAtlas2Running() == true){
+                s2.killForceAtlas2();
+            }
+            s2.configForceAtlas2({
+
+                            worker: true,
+//                            autoStop: 10,
+//                //            background: false,
+//                            adjustSizes: true,
+                gravity: 20
+            });
+            s2.startForceAtlas2();
+            setTimeout(()=> s2.stopForceAtlas2(),20000)
+        }
+    }
+    let pipe = function(data) {
+        let resultlists = data.results.map(o => o.data).reduce((a,v) => a.concat(v), [])
+        let links = resultlists.filter(o => typeof(o.row[0].rel.CreationDate)!== 'undefined').map(function(o){
+            return {
+                "source": o.row[0].from.UserId,
+                "target": o.row[0].to.UserId,
+                "time": o.row[0].rel.CreationDate,
+                "key": o.row[0].from.UserId+':'+o.row[0].to.UserId
+            }
+        })
+
+        let nodesmap = {}
+        for(let i = 0; i < resultlists.length; i ++){
+            let row = resultlists[i].row[0]
+            nodesmap[row.from.UserId] = row.from
+            nodesmap[row.to.UserId] = row.to
+        }
+        let nodes = Object.keys(nodesmap).map(key => nodesmap[key])
+        return {
+            "nodes":nodes,
+            "links":links
+        }
+    }
+    let promise = query(getStatementByTag("neo4j"),[JSON.parse,pipe])
+    promise.then((data) => anotherSigmaVis(data.data))
+        .catch(e => console.log(e))
+</script>
 </body>
 
 </html>
