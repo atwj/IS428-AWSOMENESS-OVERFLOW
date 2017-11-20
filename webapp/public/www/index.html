@@ -46,6 +46,20 @@ line.link {
     min-height: 3px;
     min-width: 10px;
 }
+#insight{
+    position: absolute;
+    z-index:1;
+    bottom:0;
+    right:0;
+    background-color:#fff;
+    padding: 10px;
+    margin: 10px 10px;
+    border: 1px solid #6895b4;
+    min-height: 3px;
+    min-width: 10px;
+    height:15%;
+    width: 97%%;
+}
 .item-group {
     margin-bottom: 5px;
 }
@@ -98,7 +112,7 @@ line.link {
         <a class="nav-link" href="vis1">Cluster of Tags <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="vis2">Link</a>
+        <a class="nav-link" href="vis2">Network analysis </a>
       </li>
     </ul>
     
@@ -113,6 +127,15 @@ line.link {
 
     </div>
 
+<div id="insight">
+<p>
+    <h6 style="margin-top:-15px;">How are the different technologies on Stackoverflow used together?</h6>
+    We counted the frequency of tags used together to determine their compatibility. Greater weights of edges signify more frequent use of tags together. We categorised nodes into 2 sizes, based on degree-centrality. This allows easy identification and reading of all nodes on the graph. Clusters of technologies were also identified using the Louvain modularity algorithm.
+    <br>
+    <br>
+    "java","javascript", "c#", "excel" and "iOS" each have a distinct community with its respective libraries and tools. They have multiple links with technologies across Stackoverflow, suggesting broad use in many areas.
+</p>
+</div>
     <script type="text/javascript">
         var width = 1270,     // svg width
             height = 700,     // svg height
