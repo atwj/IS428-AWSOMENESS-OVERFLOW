@@ -61,7 +61,13 @@
             font-size: 8pt;
             float: left;
         }
-
+        #density{
+            margin-left: 10px;
+            margin-top:6px;
+            font-size: 8pt;
+            float: left;
+        }
+        0.0007501678768784844
         #stop:hover{
             background-color: #f44336;
             color: white;
@@ -282,6 +288,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reductio/0.6.3/reductio.min.js"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.9/dc.min.js"></script>-->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.6/cytoscape.js"></script>
 <script src="jsnetworkx.js"></script>
 <!--<script src='../js/vis2.js' defer></script>-->
 
@@ -356,6 +363,7 @@
             <button id="stop" class="btn btn-secondary">Stop animation</button>
             <div id='total-nodes' class="stats"></div>
             <div id='total-edges' class="stats"></div>
+            <div id='density' class="stats"></div>
             <div id='date-chart' class='chart'>
                 <!--<svg width="960" height="600"></svg>-->
 
@@ -931,6 +939,7 @@
         // Highlight nodes and edges on click.
         function render(){
             // Get all edges within filtered date.
+            let cy = cytoscape()
             let graphObjects = edgeByDate.top(Infinity)
             let filteredCF = crossfilter(edgeCrossFilter.allFiltered())
             let pairDim = filteredCF.dimension(d=> [d.source,d.target])
@@ -963,6 +972,20 @@
                     target: r.key[1],
                     size: r.value * 10
                 })
+            })
+
+            uniqueNodes.forEach(r => {
+                cy.add({data:{
+                    id: r
+                }})
+            })
+
+            pairList.forEach((r,i) => {
+                cy.add({data:{
+                    id:i,
+                    source: r.key[0],
+                    target: r.key[1]
+                }})
             })
             //JSNETWORKX GRAPH
             var G = new jsnx.DiGraph();
@@ -1034,6 +1057,7 @@
 
                 document.getElementById('total-nodes').innerHTML = "Total nodes: " +s2.graph.nodes().length
                 document.getElementById('total-edges').innerHTML = "Total edges: "+s2.graph.edges().length
+                document.getElementById('density').innerHTML = "Connected Components: "+ cy.elements('*').components().length
 
             });
             s2.refresh()
