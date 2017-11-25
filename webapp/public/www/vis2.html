@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Network Analysis</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
         crossorigin="anonymous">
     <style>
@@ -61,7 +61,13 @@
             font-size: 8pt;
             float: left;
         }
-
+        #density{
+            margin-left: 10px;
+            margin-top:6px;
+            font-size: 8pt;
+            float: left;
+        }
+        0.0007501678768784844
         #stop:hover{
             background-color: #f44336;
             color: white;
@@ -271,7 +277,6 @@
             src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous"></script>
-<script srr="https://cdnjs.cloudflare.com/ajax/libs/q.js/2.0.3/q.min.js"></script>
 
 <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>-->
 <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.js"></script>-->
@@ -282,7 +287,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reductio/0.6.3/reductio.min.js"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.9/dc.min.js"></script>-->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.6/cytoscape.js"></script>
 <script src="jsnetworkx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 <!--<script src='../js/vis2.js' defer></script>-->
 
 </head>
@@ -356,6 +363,8 @@
             <button id="stop" class="btn btn-secondary">Stop animation</button>
             <div id='total-nodes' class="stats"></div>
             <div id='total-edges' class="stats"></div>
+            <div id='density' class="stats"></div>
+            <div id="isrunning"></div>
             <div id='date-chart' class='chart'>
                 <!--<svg width="960" height="600"></svg>-->
 
@@ -410,7 +419,7 @@
                     config.transformResponse = transform
                 }
                 // returns promise
-                return axios('http://35.198.202.139:7474/db/data/transaction/commit', config)
+                return axios('http://35.187.249.158:7474/db/data/transaction/commit', config)
             }
     let vis = function (data) {
                 let svg = d3.select("svg"),
@@ -587,7 +596,7 @@
                 .x(d3.scaleTime()
                     .domain([start, end])
                     .rangeRound([0, 10 * 90]))
-                .filter([new Date(2016,0), new Date(2017,0)])
+                .filter([new Date(2015,0), new Date(2016,0)])
         ]
         const chart = d3.selectAll('.chart')
             .data(charts);
@@ -841,6 +850,12 @@
             neighbors[k] = this.nodesIndex[k];
         return neighbors;
     });
+    sigma.classes.graph.addMethod('countOutDeg', function(nodeId){
+       return this.outNeighborsCount[nodeId]
+    });
+    sigma.classes.graph.addMethod('countInDeg', function(nodeId){
+       return this.inNeighborsCount[nodeId]
+    });
     let s = null
     let s2 = null
     let anotherSigmaVis = function(data){
@@ -931,6 +946,7 @@
         // Highlight nodes and edges on click.
         function render(){
             // Get all edges within filtered date.
+            let cy = cytoscape()
             let graphObjects = edgeByDate.top(Infinity)
             let filteredCF = crossfilter(edgeCrossFilter.allFiltered())
             let pairDim = filteredCF.dimension(d=> [d.source,d.target])
@@ -964,6 +980,20 @@
                     size: r.value * 10
                 })
             })
+
+            uniqueNodes.forEach(r => {
+                cy.add({data:{
+                    id: r
+                }})
+            })
+
+            pairList.forEach((r,i) => {
+                cy.add({data:{
+                    id:i,
+                    source: r.key[0],
+                    target: r.key[1]
+                }})
+            })
             //JSNETWORKX GRAPH
             var G = new jsnx.DiGraph();
             uniqueNodes.forEach((d, i, a) => {
@@ -974,13 +1004,14 @@
             });
 
             let results = new jsnx.genBetweennessCentrality(G);
-            nodeArr = s2.graph.nodes().map(v => s2.graph.degree(v.id))
+            // use out-going degrees
+            nodeArr = s2.graph.nodes().map(v => s2.graph.countOutDeg(v.id))
             let topDegrees = s2.graph.nodes()
-                .sort((a, b) => s2.graph.degree(b.id) - s2.graph.degree(a.id))
+                .sort((a, b) => s2.graph.countOutDeg(b.id) - s2.graph.countOutDeg(a.id))
                 .slice(0, 5);
             console.log(topDegrees)
             binner = d3.scaleQuantize().domain([Math.min.apply(null,nodeArr), Math.max.apply(null,nodeArr)]).range([2,4,8,16,32])
-            s2.graph.nodes().forEach(v => v.size = binner(s2.graph.degree(v.id)))
+            s2.graph.nodes().forEach(v => v.size = binner(s2.graph.countOutDeg(v.id)))
 
             results.then(function(a){
                 let obj = a._stringValues
@@ -1034,7 +1065,8 @@
 
                 document.getElementById('total-nodes').innerHTML = "Total nodes: " +s2.graph.nodes().length
                 document.getElementById('total-edges').innerHTML = "Total edges: "+s2.graph.edges().length
-
+                document.getElementById('density').innerHTML = "Connected Components: "+ cy.elements('*').components().length
+                document.getElementById('isrunning').innerHTML = ""
             });
             s2.refresh()
             if(s2.isForceAtlas2Running() == true){
@@ -1048,7 +1080,7 @@
                 gravity: 20
             });
             s2.startForceAtlas2();
-            setTimeout(()=> s2.stopForceAtlas2(),20000)
+            setTimeout(()=> s2.stopForceAtlas2(),30000)
         }
     }
     let pipe = function(data) {
@@ -1075,8 +1107,10 @@
         }
     }
     let promise = query(getStatementByTag("neo4j"),[JSON.parse,pipe])
-    promise.then((data) => anotherSigmaVis(data.data))
-        .catch(e => console.log(e))
+    promise.then((data) => {
+        anotherSigmaVis(data.data)
+        document.getElementById('isrunning').innerHTML = "Running"
+    }).catch(e => console.log(e))
 
     $("#submitsearch").on('click', function (e) {
         //ajax call here
@@ -1089,7 +1123,10 @@
         s.refresh()
         s2.refresh()
         let promise = query(getStatementByTag(tag),[JSON.parse,pipe])
-        promise.then((data) => anotherSigmaVis(data.data))
+        promise.then((data) => {
+            anotherSigmaVis(data.data)
+            document.getElementById('isrunning').innerHTML = "Running"
+        })
             .catch(e => console.log(e))
         //stop form submission
         e.preventDefault();
