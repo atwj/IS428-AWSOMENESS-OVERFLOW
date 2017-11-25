@@ -100,20 +100,7 @@
                 min-width: 80%;
                 background-color:#fff;
         }
-        #legend {
-                position: fixed;
-                top: 0;
-                left:0;
-                margin-top:100px;
-                background: #FFF;
-                text-align: center;
-                padding-top:1px;
-                padding-left: 1%;
-                border: solid 1px #ccc;
-                min-height: 10%;
-                min-width: 5%;
-                font-size: 7pt;
-        }
+       
 
         #right-side-bar{
             position: fixed;
@@ -143,20 +130,22 @@
         background-color:#fff;
 
   }
-        #legend {
-            position: fixed;
-            top: 0;
-            left:0;
-            margin-top:120px;
-            background-color:#fff;
-            text-align: center;
-            padding-top:2px;
-            border: solid 1px #ccc;
-            min-height: 10%;
-            min-width: 5%;
-            width:10%;
-            font-size: 7pt;
-        }
+    #legend {
+        position: fixed;
+        z-index:1;
+        top: 0;
+        left:0;
+        margin-top:120px;
+        background-color:#fff;
+        text-align: center;
+        padding-top:2px;
+        padding-left:5px;
+        border: solid 1px #ccc;
+        min-height: 10%;
+        min-width: 5%;
+        width:9%;
+        font-size: 7pt;
+    }
   .reset {
     padding-left: 1em;
     font-size: smaller;
@@ -257,8 +246,9 @@
   }
 
 #vis-title {
-    display:inline-block; float:left;
-    z-index: 999999;
+    display:inline-block;
+    float:left;
+    z-index: 1;
     position: absolute;
 }
 #vis-title > h5 {
@@ -267,7 +257,7 @@
     margin-left: 5px;
 }
 #key {
-  margin-top: 15px;
+  margin-top: 5px;
   margin-left: 20px;
   margin-bottom:5px;
   width: 100px;
