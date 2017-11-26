@@ -11,3 +11,5 @@
 The second visualization requires the use of the neo4j database service which should most likely be unavailable at this
 point in time due to high server costs. Unless you are Prof. Kam (in which please email amos.tan.2014@sis.smu.edu.sg), I
 regret to inform you that only the beautiful user interface will be available for your viewing pleasure.
+
+Click here for our application user guide: [IS428 Awesomeness Overflow User Guide](https://github.com/atwj/IS428-AWSOMENESS-OVERFLOW/blob/master/User%20Guide.pdf)
