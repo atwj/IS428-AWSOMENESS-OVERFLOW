@@ -67,7 +67,7 @@
             font-size: 8pt;
             float: left;
         }
-        0.0007501678768784844
+
         #stop:hover{
             background-color: #f44336;
             color: white;
@@ -100,20 +100,7 @@
                 min-width: 80%;
                 background-color:#fff;
         }
-        #legend {
-                position: fixed;
-                top: 0;
-                left:0;
-                margin-top:100px;
-                background: #FFF;
-                text-align: center;
-                padding-top:1px;
-                padding-left: 1%;
-                border: solid 1px #ccc;
-                min-height: 10%;
-                min-width: 5%;
-                font-size: 7pt;
-        }
+       
 
         #right-side-bar{
             position: fixed;
@@ -143,21 +130,22 @@
         background-color:#fff;
 
   }
-        #legend {
-            position: fixed;
-            top: 0;
-            left:0;
-            margin-top:120px;
-            background-color:#fff;
-            text-align: center;
-            padding-top:2px;
-            padding-left: 15px;
-            padding-right: 5px;
-            border: solid 1px #ccc;
-            min-height: 10%;
-            min-width: 5%;
-            font-size: 7pt;
-        }
+    #legend {
+        position: fixed;
+        z-index:1;
+        top: 0;
+        left:0;
+        margin-top:120px;
+        background-color:#fff;
+        text-align: center;
+        padding-top:2px;
+        padding-left:5px;
+        border: solid 1px #ccc;
+        min-height: 10%;
+        min-width: 5%;
+        width:9%;
+        font-size: 7pt;
+    }
   .reset {
     padding-left: 1em;
     font-size: smaller;
@@ -258,14 +246,23 @@
   }
 
 #vis-title {
-    display:inline-block; float:left;
-    z-index: 999999;
+    display:inline-block;
+    float:left;
+    z-index: 1;
     position: absolute;
 }
 #vis-title > h5 {
     float: left;
     margin-right: 5px;
     margin-left: 5px;
+}
+#key {
+  margin-top: 5px;
+  margin-left: 20px;
+  margin-bottom:5px;
+  width: 100px;
+  height: 200px;
+  overflow: visible;
 }
     </style>
 
@@ -289,6 +286,7 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js' defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.6/cytoscape.js"></script>
 <script src="jsnetworkx.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 <!--<script src='../js/vis2.js' defer></script>-->
 
@@ -323,7 +321,7 @@
     <div id="legend">
         <div id="legend-1">
             <div class='title'><b>Degree Legend</b></div>
-            <svg width="80" height="110" style="margin-left:-50px; ">
+            <svg width="80" height="110" style="margin-left:-80px; ">
                 <g>
                     <circle cy="23" cx="20" r="2" color="black"></circle>
                     <text x="40" y="24">Low</text>
@@ -346,14 +344,11 @@
                 </g>
             </svg>
         </div>
-        <div id="legend-2" style="margin-left:-10px;">
+        <div id="legend-2">
             <div class='title'><b>Betweenness Legend</b></div>
-            <p>High</p>
-            <img src="..\image\legend.png" height="100" width="20" style="margin-top:-10px;">
-            <p>Low</p>
+            <svg id="key">
 
             </svg>
-
         </div>
     </div>
     <div id="container"></div>
@@ -406,6 +401,7 @@
                 </p>
             </div>
         </div>
+        <script src="../js/legend.js"></script>
     <script>
     let query = function (statements, transform) {
                 var config = {
